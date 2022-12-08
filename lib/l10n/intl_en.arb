@@ -1,0 +1,16 @@
+{
+    "app_name": "ELIA SSI WALLET",
+    "network_error_something_went_wrong": "Something went wrong, please try again later.",
+    "network_error_no_internet_connection": "Check your internet connection.",
+    "network_error_no_authentication": "You are not authenticated.",
+    "error_default": "Something went wrong",
+    "internet_connection_error": "Check if you have a working network connection.",
+    "internet_certificate_connection_error": "You are connected to an insecure network.",
+    "internal_server_error": "Something is wrong with the server. Please try again later.",
+    "network_error": "Check your internet connection.",
+    "login_error": "Something went wrong with authenticating the app, please try again later.",
+    "back": "Back",
+    "search": "Search",
+    "cancel": "Cancel",
+    "save": "Save"
+}
