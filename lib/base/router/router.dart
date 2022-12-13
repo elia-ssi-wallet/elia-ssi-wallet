@@ -12,6 +12,7 @@ class MyRouter {
         return PlatformRoute(route: HomeScreen(), settings: settings);
       case Routes.qr:
         return PlatformRoute(route: QRCodeScanner(), settings: settings);
+
       default:
         return PlatformRoute(
             route: PlatformScaffold(

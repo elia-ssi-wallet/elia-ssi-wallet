@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
+  static const blue = Color(0xFF0055FF);
+
   static final Map<int, Color> colors = {
     50: const Color.fromRGBO(1, 58, 56, .1),
     100: const Color.fromRGBO(1, 58, 56, .2),

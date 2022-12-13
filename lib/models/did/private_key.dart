@@ -1,0 +1,27 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'private_key.g.dart';
+
+@JsonSerializable()
+class PrivateKey {
+  String crv;
+  String x;
+  String kty;
+  String kid;
+
+  PrivateKey({
+    required this.crv,
+    required this.x,
+    required this.kty,
+    required this.kid,
+  });
+
+  factory PrivateKey.fromJson(Map<String, dynamic> json) => _$PrivateKeyFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PrivateKeyToJson(this);
+
+  @override
+  String toString() {
+    return 'PrivateKey(crv: $crv, x: $x, kty: $kty, kid: $kid)';
+  }
+}

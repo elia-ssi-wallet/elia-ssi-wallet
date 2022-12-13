@@ -12,5 +12,14 @@
     "back": "Back",
     "search": "Search",
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "my_did_date": "My DID Data",
+    "DID": "DID",
+    "did_controller_key": "DID controller key (current)",
+    "signature_algorithm": "Signature algorithm",
+    "did_private_key": "DID private key (current)",
+    "show": "Show",
+    "hide": "Hide",
+    "show_private_key": "Show private key",
+    "show_private_key_extra": "You should not show that key to anybody and the key should not be copied elsewhere. Sharing this key with someone else can be considered as fraud."
 }

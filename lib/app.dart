@@ -22,6 +22,11 @@ void main() async {
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarBrightness: Brightness.light));
 
+  // Workmanager().initialize(
+  //   callbackDispatcher, // The top level function, aka callbackDispatcher
+  //   isInDebugMode: true, // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
+  // );
+
   runApp(
     App(),
   );

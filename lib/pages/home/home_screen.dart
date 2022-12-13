@@ -1,7 +1,7 @@
+import 'package:elia_ssi_wallet/pages/did/did_token_screen.dart';
 import 'package:elia_ssi_wallet/pages/home/home_screen_viewmodel.dart';
 import 'package:elia_ssi_wallet/pages/widgets/contract_list_widget.dart';
 import 'package:elia_ssi_wallet/pages/widgets/scan_qr_code_button.dart';
-import 'package:elia_ssi_wallet/repositories/did_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -32,75 +32,9 @@ class HomeScreen extends StatelessWidget {
                         context: context,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         backgroundColor: Colors.white,
-                        builder: ((context) {
-                          return Column(
-                            children: [
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  CupertinoButton(
-                                    padding: EdgeInsets.zero,
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Row(
-                                      children: const [
-                                        SizedBox(
-                                          width: 8,
-                                        ),
-                                        Icon(
-                                          Icons.arrow_back_ios_new_rounded,
-                                          size: 25,
-                                          color: Colors.black,
-                                        ),
-                                        SizedBox(width: 5.0),
-                                        Text(
-                                          'back',
-                                          style: TextStyle(color: Colors.black, fontSize: 17),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  const Text(
-                                    'My DID Data',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  TextButton(
-                                    onPressed: () async {
-                                      await DIDRepository.createAndRegisterNewDID();
-                                    },
-                                    child: const Text('Create DID'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () async {
-                                      viewModel.didToken = await DIDRepository.getDidTokenFromSecureStorage();
-                                    },
-                                    child: const Text('Get DID from secure storage'),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Observer(
-                                      builder: (_) => Text(
-                                        'DID Token: ${viewModel.didToken}',
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              )
-                            ],
-                          );
-                        }),
+                        builder: (context) {
+                          return DidTokenScreen();
+                        },
                       );
                     },
                     child: const Text(
