@@ -1,3 +1,5 @@
+import 'package:elia_ssi_wallet/database/database.dart';
+import 'package:elia_ssi_wallet/repositories/exchange_repository.dart';
 import 'package:mobx/mobx.dart';
 
 part 'home_screen_viewmodel.g.dart';
@@ -12,22 +14,5 @@ abstract class _HomeScreenViewModel with Store {
   String? didToken = '';
 
   @observable
-  ObservableList linkedContracts = [
-    {
-      'type': 'electric car',
-      'name': 'Nissan Leaf',
-    },
-    {
-      'type': 'dishwasher',
-      'name': 'Whirlpool XB12',
-    },
-    {
-      'type': 'battery',
-      'name': 'BigBattery',
-    },
-    {
-      'type': 'gov identity',
-      'name': 'Identity',
-    },
-  ].asObservable();
+  ObservableStream<List<VC>> vCsStream = ExchangeRepository.dao.vCsStream().asObservable();
 }

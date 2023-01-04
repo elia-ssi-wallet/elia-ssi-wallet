@@ -25,6 +25,9 @@ abstract class _DidTokenViewModel with Store {
     if (didTokenFromStorage != null) {
       DIDToken obj = DIDToken.fromJson(jsonDecode(didTokenFromStorage));
       didToken = obj;
+    } else {
+      await DIDRepository.createAndRegisterNewDID();
+      await getTokenFromSecureStorage();
     }
   }
 }

@@ -11,27 +11,6 @@ import 'package:flutter/services.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'base/platform_widgets/platform_widgets.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // Set portrait orientation
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarBrightness: Brightness.light));
-
-  // Workmanager().initialize(
-  //   callbackDispatcher, // The top level function, aka callbackDispatcher
-  //   isInDebugMode: true, // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
-  // );
-
-  runApp(
-    App(),
-  );
-}
-
 class App extends StatelessWidget {
   App({Key? key}) : super(key: key);
   final int index = 0;
@@ -68,11 +47,11 @@ class App extends StatelessWidget {
             statusBarBrightness: Brightness.light,
           ),
           child: PlatformApp(
-            title: 'Elia SSI wallet',
+            title: 'Elia SSI Wallet',
             materialTheme: materialTheme,
             cupertinoTheme: cupertinoTheme,
             supportedLocales: S.delegate.supportedLocales,
-            initialRoute: Routes.home,
+            initialRoute: Routes.acceptTermsAndConditions,
             globalNavKey: locator.get<NavigationService>().navigatorKey,
           ),
         ),

@@ -1,6 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'package:dio/dio.dart';
+import 'package:elia_ssi_wallet/models/did/did_token.dart';
 import 'package:retrofit/http.dart';
 
 part 'api_manager_service.g.dart';

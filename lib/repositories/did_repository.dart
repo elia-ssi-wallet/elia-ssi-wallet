@@ -7,9 +7,9 @@ import 'package:elia_ssi_wallet/networking/unprotected_rest_client.dart';
 import 'package:logger/logger.dart';
 
 class DIDRepository {
-  static final client = ApiManagerService(UnProtectedRestClient().dio);
   // ignore: constant_identifier_names
   static const DID_TOKEN = "did_token";
+  static final client = ApiManagerService(UnProtectedRestClient().dio);
 
   static Future<void> createAndRegisterNewDID() async {
     await createDID(
@@ -36,19 +36,25 @@ class DIDRepository {
     );
   }
 
-  static Future createDID({required Function(String keyId) onSuccess}) async {
+  static Future<dynamic> createDID({required Function(String keyId) onSuccess}) async {
     var body = {"method": "key"};
 
-    await doCall<dynamic>(
+    // var didToken;
+
+    return await doCall<dynamic>(
       client.createDID(body: body),
       succesFunction: (object) async {
         Logger().d("createDID: $object");
+        // didToken = object;
         await onSuccess(object["verificationMethod"][0]["publicKeyJwk"]["kid"]);
       },
       errorFunction: (error) {
         Logger().d("createDID: $error");
       },
+      showDialogs: false,
     );
+
+    // return didToken;
   }
 
   static Future exportKey(

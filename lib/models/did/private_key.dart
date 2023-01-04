@@ -5,15 +5,15 @@ part 'private_key.g.dart';
 @JsonSerializable()
 class PrivateKey {
   String crv;
+  String d;
   String x;
   String kty;
-  String kid;
 
   PrivateKey({
     required this.crv,
+    required this.d,
     required this.x,
     required this.kty,
-    required this.kid,
   });
 
   factory PrivateKey.fromJson(Map<String, dynamic> json) => _$PrivateKeyFromJson(json);
@@ -22,6 +22,6 @@ class PrivateKey {
 
   @override
   String toString() {
-    return 'PrivateKey(crv: $crv, x: $x, kty: $kty, kid: $kid)';
+    return 'PrivateKey(crv: $crv, d: $d, x: $x, kty: $kty)';
   }
 }
