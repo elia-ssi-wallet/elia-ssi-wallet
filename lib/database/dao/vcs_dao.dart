@@ -21,6 +21,8 @@ class VCsDao extends DatabaseAccessor<Database> with _$VCsDaoMixin {
 
   Future<void> deleteVCs() => delete(vCs).go();
 
+  Future<void> deleteVC({required int vcId}) => (delete(vCs)..where((tbl) => tbl.id.equals(vcId))).go();
+
   Future<List<VC>> getVCs() => select(vCs).get();
 
   Stream<List<VC>> vCsStream() => select(vCs).watch();

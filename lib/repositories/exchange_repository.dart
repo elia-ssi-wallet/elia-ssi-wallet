@@ -1,7 +1,6 @@
-import 'dart:convert';
-
 import 'package:elia_ssi_wallet/base/globals.dart';
 import 'package:elia_ssi_wallet/database/dao/vcs_dao.dart';
+import 'package:elia_ssi_wallet/models/did/did_token.dart';
 import 'package:elia_ssi_wallet/networking/api_manager_service.dart';
 import 'package:elia_ssi_wallet/networking/do_call.dart';
 import 'package:elia_ssi_wallet/networking/unprotected_rest_client.dart';
@@ -73,17 +72,17 @@ class ExchangeRepository {
     required Function(dynamic object) onSuccess,
     required Function(dynamic object) onError,
   }) async {
-    String? didToken = await DIDRepository.getDidTokenFromSecureStorage();
+    DIDToken? didToken = await DIDRepository.getDidTokenFromSecureStorage();
 
     if (didToken != null) {
-      dynamic jsonDidToken = jsonDecode(didToken);
-      jsonDidToken["id"];
-      jsonDidToken["verificationMethod"][0]["id"];
+      // dynamic jsonDidToken = jsonDecode(didToken);
+      // jsonDidToken["id"];
+      // jsonDidToken["verificationMethod"][0]["id"];
 
       var body = {
-        "did": jsonDidToken["id"],
+        "did": didToken.id,
         "options": {
-          "verificationMethod": jsonDidToken["verificationMethod"][0]["id"],
+          "verificationMethod": didToken.verificationMethod.first.id,
           "proofPurpose": "authentication",
           "challenge": challenge,
         },

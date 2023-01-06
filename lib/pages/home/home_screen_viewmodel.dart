@@ -1,4 +1,5 @@
 import 'package:elia_ssi_wallet/database/database.dart';
+import 'package:elia_ssi_wallet/repositories/did_repository.dart';
 import 'package:elia_ssi_wallet/repositories/exchange_repository.dart';
 import 'package:mobx/mobx.dart';
 
@@ -11,8 +12,9 @@ abstract class _HomeScreenViewModel with Store {
   int index = 0;
 
   @observable
-  String? didToken = '';
-
-  @observable
   ObservableStream<List<VC>> vCsStream = ExchangeRepository.dao.vCsStream().asObservable();
+
+  _HomeScreenViewModel() {
+    DIDRepository.initalCheckForDID();
+  }
 }

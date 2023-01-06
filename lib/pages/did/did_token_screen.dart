@@ -65,21 +65,26 @@ class DidTokenScreen extends StatelessWidget {
                     obscure: viewModel.obscure,
                     onTap: () {
                       if (viewModel.obscure) {
-                        showPlatformAlertDialog(title: S.of(context).show_private_key, subtitle: S.of(context).show_private_key_extra, isDismissable: true, actions: [
-                          MaterialButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text(S.of(context).cancel),
-                          ),
-                          MaterialButton(
-                            onPressed: () {
-                              viewModel.obscure = !viewModel.obscure;
-                              Navigator.of(context).pop();
-                            },
-                            child: Text(S.of(context).show),
-                          ),
-                        ]);
+                        showPlatformAlertDialog(
+                          title: S.of(context).show_private_key,
+                          subtitle: S.of(context).show_private_key_extra,
+                          isDismissable: true,
+                          actions: [
+                            MaterialButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(S.of(context).cancel),
+                            ),
+                            MaterialButton(
+                              onPressed: () {
+                                viewModel.obscure = !viewModel.obscure;
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(S.of(context).show),
+                            ),
+                          ],
+                        );
                       } else {
                         viewModel.obscure = !viewModel.obscure;
                       }
@@ -87,6 +92,25 @@ class DidTokenScreen extends StatelessWidget {
                     subtitle: S.of(context).did_private_key_info,
                   ),
                   // -----------------
+
+                  // CupertinoButton(
+                  //     child: const Text("create key"),
+                  //     onPressed: () async {
+                  //       await DIDRepository.createDID(onSuccess: (v) async {
+                  //         await DIDRepository.exportKey(
+                  //             didToken: v,
+                  //             onSuccess: (_, __) {
+                  //               print("exported");
+                  //             });
+                  //       });
+                  //     }),
+                  // CupertinoButton(
+                  //     child: const Text("import key"),
+                  //     onPressed: () async {
+                  //       await DIDRepository.importKey(onSuccess: (val) async {
+                  //         await DIDRepository.registerDID(keyId: val, onSuccess: (_) {});
+                  //       });
+                  //     }),
                 ],
               ),
             ),

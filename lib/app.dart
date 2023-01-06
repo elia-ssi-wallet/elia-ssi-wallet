@@ -1,19 +1,35 @@
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:elia_ssi_wallet/base/base_utils.dart';
-import 'package:elia_ssi_wallet/base/get_it.dart';
-import 'package:elia_ssi_wallet/base/navigation_service.dart';
-import 'package:elia_ssi_wallet/base/router/routes.dart';
-import 'package:elia_ssi_wallet/flavors.dart';
-import 'package:elia_ssi_wallet/generated/l10n.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:timeago/timeago.dart' as timeago;
+
+import 'package:elia_ssi_wallet/base/base_utils.dart';
+import 'package:elia_ssi_wallet/base/get_it.dart';
+import 'package:elia_ssi_wallet/base/navigation_service.dart';
+import 'package:elia_ssi_wallet/flavors.dart';
+import 'package:elia_ssi_wallet/generated/l10n.dart';
+
 import 'base/platform_widgets/platform_widgets.dart';
 
-class App extends StatelessWidget {
-  App({Key? key}) : super(key: key);
+class App extends StatefulWidget {
+  const App({
+    Key? key,
+    required this.initialRoute,
+  }) : super(key: key);
+  final String initialRoute;
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
   final int index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   final materialTheme = ThemeData(
     fontFamily: "Sf Pro Display",
@@ -51,7 +67,7 @@ class App extends StatelessWidget {
             materialTheme: materialTheme,
             cupertinoTheme: cupertinoTheme,
             supportedLocales: S.delegate.supportedLocales,
-            initialRoute: Routes.acceptTermsAndConditions,
+            initialRoute: widget.initialRoute,
             globalNavKey: locator.get<NavigationService>().navigatorKey,
           ),
         ),

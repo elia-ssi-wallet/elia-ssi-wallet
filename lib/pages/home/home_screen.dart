@@ -82,22 +82,25 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           SliverOverlapInjector(handle: appbarHandle),
-          Visibility(
-            visible: viewModel.vCsStream.value?.isEmpty ?? false,
-            replacement: const SliverFillRemaining(
-              child: Center(
+          Observer(
+            builder: (_) => Visibility(
+              visible: viewModel.vCsStream.value?.isNotEmpty ?? false,
+              replacement: const SliverFillRemaining(
+                child: Center(
                   child: Text(
-                "No items in the list",
-                textAlign: TextAlign.center,
-              )),
-            ),
-            child: Observer(
-              builder: (_) => SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => VcItem(
-                    vc: viewModel.vCsStream.value![index],
+                    "No items in the list",
+                    textAlign: TextAlign.center,
                   ),
-                  childCount: viewModel.vCsStream.value?.length ?? 0,
+                ),
+              ),
+              child: Observer(
+                builder: (_) => SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) => VcItem(
+                      vc: viewModel.vCsStream.value![index],
+                    ),
+                    childCount: viewModel.vCsStream.value?.length ?? 0,
+                  ),
                 ),
               ),
             ),

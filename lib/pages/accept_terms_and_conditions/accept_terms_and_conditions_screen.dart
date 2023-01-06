@@ -9,6 +9,7 @@ import 'package:elia_ssi_wallet/pages/widgets/background_circles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:styled_text/styled_text.dart';
 
 class AcceptTermsAndConditions extends StatelessWidget {
@@ -82,7 +83,10 @@ class AcceptTermsAndConditions extends StatelessWidget {
                           borderRadius: BorderRadius.circular(50.0),
                           onPressed: !viewModel.tos
                               ? null
-                              : () {
+                              : () async {
+                                  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+                                  sharedPreferences.setBool("tos_accepted", true);
+
                                   Navigator.of(context).pushNamedAndRemoveUntil(Routes.home, (route) => false);
                                 },
                           color: AppColors.dark,

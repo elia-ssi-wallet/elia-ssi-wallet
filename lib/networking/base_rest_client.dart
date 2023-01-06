@@ -73,6 +73,7 @@ abstract class BaseRestClient {
 
     //!PROXYMAN (do not forget to import 'package:dio/adapter.dart')
     if (kDebugMode && enableProxyman && !kIsWeb) {
+      print("do proxyman");
       //                                  <computer_ip_address:9090>
       String proxy = Platform.isAndroid ? '192.168.2.187:9090' : 'localhost:9090';
 
@@ -89,12 +90,6 @@ abstract class BaseRestClient {
       };
     }
 
-    //check bad certificate
-    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (HttpClient client) {
-      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
-
-      return client;
-    };
     return dio;
   }
 }
