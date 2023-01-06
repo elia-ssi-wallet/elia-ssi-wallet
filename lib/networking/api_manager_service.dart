@@ -1,8 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'package:dio/dio.dart';
-import 'package:elia_ssi_wallet/models/did/did_token.dart';
-import 'package:retrofit/http.dart';
+import 'package:retrofit/retrofit.dart';
 
 part 'api_manager_service.g.dart';
 
@@ -31,6 +30,16 @@ abstract class ApiManagerService {
   @GET("https://vc-api-dev.energyweb.org/v1/did/{myDID}")
   Future<dynamic> checkIfDIDExists({@Path("myDID") required String did});
 
+  //* 1.3 [Resident] Initiate issuance exchange using the request URL
+  @POST("{exchangeURL}")
+  Future<dynamic> initiateIssuance({@Path("exchangeURL") required String exchangeURL});
+
+  //* 1.5 [Resident] Create a DID authentication proof
+  @POST("https://vc-api-dev.energyweb.org/v1/vc-api/presentations/prove/authentication")
+  Future<dynamic> createDidAuthenticationProof({
+    @Body() required dynamic body,
+  });
+
   //* 1.6 [Resident] Continue exchange by submitting the DID Auth proof
   //* 1.12 [Resident] Continue the exchange and obtain the credentials
   // @PUT("https://vc-api-dev.energyweb.org/v1/vc-api/exchanges/{exchangeId}/{transactionId}")
@@ -40,16 +49,6 @@ abstract class ApiManagerService {
     // @Path("transactionId") required String transactionId,
     @Path("serviceEndpoint") required String serviceEndpoint,
     @Body() required dynamic vpRequest,
-  });
-
-  //* 1.3 [Resident] Initiate issuance exchange using the request URL
-  @POST("{exchangeURL}")
-  Future<dynamic> initiateIssuance({@Path("exchangeURL") required String exchangeURL});
-
-  //* 1.5 [Resident] Create a DID authentication proof
-  @POST("https://vc-api-dev.energyweb.org/v1/vc-api/presentations/prove/authentication")
-  Future<dynamic> createDidAuthenticationProof({
-    @Body() required dynamic body,
   });
 }
 

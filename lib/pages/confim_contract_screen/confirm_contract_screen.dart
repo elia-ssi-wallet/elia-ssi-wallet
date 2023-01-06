@@ -41,7 +41,7 @@ class ConfirmContract extends StatelessWidget {
                     child: Text(
                       'Reject',
                       textAlign: TextAlign.center,
-                      style: AppStyles.button.copyWith(color: const Color(0xFFFF3D3D)),
+                      style: AppStyles.button.copyWith(color: AppColors.red),
                     ),
                   ),
                 ),

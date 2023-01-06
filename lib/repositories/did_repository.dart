@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:elia_ssi_wallet/base/secure_storage.dart';
+import 'package:elia_ssi_wallet/models/did/did_token.dart';
 import 'package:elia_ssi_wallet/networking/api_manager_service.dart';
 import 'package:elia_ssi_wallet/networking/do_call.dart';
 import 'package:elia_ssi_wallet/networking/unprotected_rest_client.dart';
@@ -15,11 +16,9 @@ class DIDRepository {
     await createDID(
       onSuccess: (keyId) async {
         await exportKey(
-          keyId: keyId,
+          didToken: keyId,
           onSuccess: (publicKey, privateKey) async {
             await importKey(
-              publicKey: publicKey,
-              privateKey: privateKey,
               onSuccess: (keyId) async {
                 await registerDID(
                   keyId: keyId,
@@ -36,38 +35,37 @@ class DIDRepository {
     );
   }
 
-  static Future<dynamic> createDID({required Function(String keyId) onSuccess}) async {
+  static Future<dynamic> createDID({required Function(dynamic object) onSuccess}) async {
     var body = {"method": "key"};
-
-    // var didToken;
 
     return await doCall<dynamic>(
       client.createDID(body: body),
       succesFunction: (object) async {
         Logger().d("createDID: $object");
-        // didToken = object;
-        await onSuccess(object["verificationMethod"][0]["publicKeyJwk"]["kid"]);
+
+        await onSuccess(object);
       },
       errorFunction: (error) {
         Logger().d("createDID: $error");
       },
       showDialogs: false,
     );
-
-    // return didToken;
   }
 
   static Future exportKey(
-      {required String keyId,
+      {required dynamic didToken,
       required Function(
         dynamic publicKey,
         dynamic privateKey,
       )
           onSuccess}) async {
     await doCall<dynamic>(
-      client.exportKey(keyId: keyId),
+      client.exportKey(keyId: didToken["verificationMethod"][0]["publicKeyJwk"]["kid"]),
       succesFunction: (object) async {
         Logger().d("exportKey: $object");
+        await SecureStorage.writeSecureData(DID_TOKEN, jsonEncode(didToken));
+        await SecureStorage.writeSecureData(SecureStorage.PUBLIC_KEY, jsonEncode(object["publicKey"]));
+        await SecureStorage.writeSecureData(SecureStorage.PRIVATE_KEY, jsonEncode(object["privateKey"]));
         await onSuccess(object["publicKey"], object["privateKey"]);
       },
       errorFunction: (error) {
@@ -76,22 +74,27 @@ class DIDRepository {
     );
   }
 
-  static Future importKey({required dynamic publicKey, required dynamic privateKey, required Function(String keyId) onSuccess}) async {
-    var body = {
-      "publicKey": publicKey,
-      "privateKey": privateKey,
-    };
+  static Future importKey({required Function(String keyId) onSuccess}) async {
+    String? publicKey = await SecureStorage.readSecureData(SecureStorage.PUBLIC_KEY);
+    String? privateKey = await SecureStorage.readSecureData(SecureStorage.PRIVATE_KEY);
 
-    await doCall<dynamic>(
-      client.importKey(body: body),
-      succesFunction: (object) async {
-        Logger().d("importKey: $object");
-        await onSuccess(object["keyId"]);
-      },
-      errorFunction: (error) {
-        Logger().d("importKey: $error");
-      },
-    );
+    if (publicKey != null && privateKey != null) {
+      var body = {
+        "publicKey": jsonDecode(publicKey),
+        "privateKey": jsonDecode(publicKey),
+      };
+
+      await doCall<dynamic>(
+        client.importKey(body: body),
+        succesFunction: (object) async {
+          Logger().d("importKey: $object");
+          await onSuccess(object["keyId"]);
+        },
+        errorFunction: (error) {
+          Logger().d("importKey: $error");
+        },
+      );
+    }
   }
 
   static Future registerDID({required String keyId, required Function(dynamic key) onSuccess}) async {
@@ -113,18 +116,14 @@ class DIDRepository {
     );
   }
 
-  static Future<String?> getDidTokenFromSecureStorage() async {
-    return await SecureStorage.readSecureData(DID_TOKEN);
+  static Future<DIDToken?> getDidTokenFromSecureStorage() async {
+    String? token = await SecureStorage.readSecureData(DID_TOKEN);
+    if (token != null) {
+      return DIDToken.fromJson(jsonDecode(token));
+    } else {
+      return null;
+    }
   }
-
-  // static Future<DidToken?> getDidTokenFromSecureStorageCorrectModel() async {
-  //   String? didToken = await SecureStorage.readSecureData(DID_TOKEN);
-  //   if (didToken != null) {
-  //     DidToken token = DidToken.fromJson(didToken);
-  //     print("token -> ${token.id}");
-  //   }
-  //   return null;
-  // }
 
   static Future<bool> checkIfDIDExists({required String did}) async {
     bool exists = false;
@@ -141,5 +140,37 @@ class DIDRepository {
     );
 
     return exists;
+  }
+
+  static Future<void> createAndExportDID() async {
+    await createDID(onSuccess: (didToken) async {
+      await exportKey(
+          didToken: didToken,
+          onSuccess: (_, __) {
+            Logger().i("KEY EXPORTED");
+          });
+    });
+  }
+
+  static Future<void> importAndRegisterDIDToken() async {
+    await importKey(onSuccess: (keyId) async {
+      await registerDID(
+          keyId: keyId,
+          onSuccess: (val) {
+            Logger().i("KEY REGISTERED");
+          });
+    });
+  }
+
+  static Future<void> initalCheckForDID() async {
+    DIDToken? token = await DIDRepository.getDidTokenFromSecureStorage();
+    if (token != null) {
+      bool onServer = await DIDRepository.checkIfDIDExists(did: token.id);
+      if (!onServer) {
+        await DIDRepository.importAndRegisterDIDToken();
+      }
+    } else {
+      await DIDRepository.createAndExportDID();
+    }
   }
 }

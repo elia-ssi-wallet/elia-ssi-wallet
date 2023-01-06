@@ -5,6 +5,8 @@ class SecureStorage {
   static const _storage = FlutterSecureStorage();
 
   static const DID_TOKEN = "did_token";
+  static const PUBLIC_KEY = "public_key";
+  static const PRIVATE_KEY = "private_key";
 
   static Future writeSecureData(String key, String value) async {
     var writeData = await _storage.write(key: key, value: value);
