@@ -41,6 +41,10 @@
 			<string>UIInterfaceOrientationLandscapeLeft</string>
 			<string>UIInterfaceOrientationLandscapeRight</string>
 		</array>
+		<key>NSCameraUsageDescription</key>
+	<string>Access your camera for scanning barcodes</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We do not use your microphone</string>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
 		<key>CADisableMinimumFrameDurationOnPhone</key>

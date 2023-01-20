@@ -5,4 +5,5 @@ class Routes {
   static const dbViewer = '/dbViewer';
   static const confirmContract = '/confirmContract';
   static const acceptTermsAndConditions = '/acceptTermsAndConditions';
+  static const pendingRequests = '/pendingRequests';
 }

@@ -1,4 +1,5 @@
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
+import 'package:elia_ssi_wallet/base/extensions/vc.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
 import 'package:elia_ssi_wallet/database/database.dart';
 import 'package:elia_ssi_wallet/pages/home/widgets/vc_detail_screen.dart';
@@ -43,18 +44,12 @@ class VcItem extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                //icon
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: FlutterLogo(
-                    size: 20,
-                  ),
-                ),
+                const SizedBox(width: 8.0),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Flexible(child: Text("Type", style: AppStyles.subtitle)),
+                    Flexible(child: Text(vc.type(), style: AppStyles.subtitle)),
                     Flexible(child: Text(vc.label, style: AppStyles.title)),
                   ],
                 ),

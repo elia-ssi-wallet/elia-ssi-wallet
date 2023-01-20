@@ -1,3 +1,6 @@
+import 'package:elia_ssi_wallet/base/globals.dart';
+import 'package:elia_ssi_wallet/database/dao/connections_dao.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:mobx/mobx.dart';
 
 part 'qr_code_scanner_viewmodel.g.dart';
@@ -5,37 +8,20 @@ part 'qr_code_scanner_viewmodel.g.dart';
 class QrCodeScannerViewModel extends _QrCodeScannerViewModel with _$QrCodeScannerViewModel {}
 
 abstract class _QrCodeScannerViewModel with Store {
-  // @observable
-  // int attempts = 0;
+  @observable
+  MobileScannerController mobileScannerController = MobileScannerController();
 
-  // @observable
-  // bool exchangeCompleted = false;
+  @observable
+  ConnectionsDao dao = ConnectionsDao(database);
 
-  // Future<void> periodicCall({required String serviceEndpoint, required dynamic vp}) async {
-  //   while (!exchangeCompleted) {
-  //     await Future.delayed(
-  //       Duration(seconds: attempts),
-  //       () async {
-  //         attempts++;
-  //         await ExchangeRepository.continueExchangeBySubmittingDIDProof(
-  //           serviceEndpoint: serviceEndpoint,
-  //           vpRequest: vp,
-  //           onSuccess: (response) async {
-  //             if (response['processingInProgress'] == true) {
-  //               print('Attempts: $attempts');
-  //               print('Continuing exchange');
-  //               exchangeCompleted = false;
-  //             } else {
-  //               print('Exchange completed');
-  //               exchangeCompleted = true;
-  //             }
-  //           },
-  //           onError: (_) {
-  //             // exchangeCompleted = false;
-  //           },
-  //         );
-  //       },
-  //     );
-  //   }
-  // }
+  @observable
+  ObservableList connections = ObservableList();
+
+  _QrCodeScannerViewModel() {
+    getConnections();
+  }
+
+  getConnections() async {
+    connections = (await dao.getConnections()).map((e) => e.name).toList().asObservable();
+  }
 }

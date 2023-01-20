@@ -1,19 +1,21 @@
 import 'package:drift/drift.dart';
 import 'package:elia_ssi_wallet/base/globals.dart';
-import 'package:elia_ssi_wallet/database/tables/vcs_table.dart';
+import 'package:elia_ssi_wallet/database/tables/all_tables.dart';
 import 'package:elia_ssi_wallet/database/dao/all_daos.dart';
+import 'package:elia_ssi_wallet/models/activity.dart';
+import 'package:elia_ssi_wallet/database/type_converters.dart';
 // export 'database_shared/mobile.dart';
 
 part 'database.drift.dart';
 
 // ! flutter pub run build_runner watch --delete-conflicting-outputs
 
-@DriftDatabase(tables: [VCs], daos: [VCsDao])
+@DriftDatabase(tables: [VCs, PendingRequests, Connections], daos: [VCsDao, PendingRequestsDao, ConnectionsDao])
 class Database extends _$Database {
   Database(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 0;
+  int get schemaVersion => 5;
 
   Future<void> deleteDatabase() async {
     await transaction(() async {

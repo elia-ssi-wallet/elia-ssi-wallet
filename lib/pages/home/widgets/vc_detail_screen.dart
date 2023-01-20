@@ -1,16 +1,19 @@
 import 'dart:convert';
 
-import 'package:elia_ssi_wallet/base/base_utils.dart';
+import 'package:elia_ssi_wallet/base/assets/assets.dart';
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
 import 'package:elia_ssi_wallet/base/helpers/alert_dialog_helper.dart';
 import 'package:elia_ssi_wallet/base/router/routes.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
 import 'package:elia_ssi_wallet/database/database.dart';
 import 'package:elia_ssi_wallet/generated/l10n.dart';
+import 'package:elia_ssi_wallet/pages/home/widgets/activity_item.dart';
+import 'package:elia_ssi_wallet/pages/widgets/vc_detail_reader.dart';
 import 'package:elia_ssi_wallet/repositories/exchange_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_svg/svg.dart';
 
 class VCDetailScreen extends StatelessWidget {
   const VCDetailScreen({required this.vc, super.key});
@@ -32,8 +35,8 @@ class VCDetailScreen extends StatelessWidget {
               backgroundColor: AppColors.dark,
               onPressed: () {
                 showPlatformAlertDialog(
-                  title: 'Are you sure you want to delete this device?',
-                  subtitle: 'Deleting this device will also delete all provided data and is irreversible',
+                  title: S.of(context).confirm_device_deletion,
+                  subtitle: S.of(context).deleting_is_permanent,
                   isDismissable: true,
                   actions: [
                     MaterialButton(
@@ -47,9 +50,9 @@ class VCDetailScreen extends StatelessWidget {
                         ExchangeRepository.dao.deleteVC(vcId: vc.id);
                         Navigator.of(context).popUntil((route) => route.settings.name == Routes.home);
                       },
-                      child: const Text(
-                        'delete',
-                        style: TextStyle(
+                      child: Text(
+                        S.of(context).delete,
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -59,7 +62,7 @@ class VCDetailScreen extends StatelessWidget {
               },
               label: Center(
                 child: Text(
-                  'Delete device',
+                  S.of(context).delete,
                   textAlign: TextAlign.center,
                   style: AppStyles.button.copyWith(color: AppColors.red),
                 ),
@@ -90,89 +93,108 @@ class VCDetailScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Contract info',
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.dark,
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Center(
+                    child: SizedBox(
+                      width: 140,
+                      height: 76,
+                      child: Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Container(
+                              height: 76,
+                              width: 76,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.dark,
+                              ),
+                              child: Center(
+                                child: SvgPicture.asset(
+                                  AppAssets.documentIcon,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: Container(
+                              height: 76,
+                              width: 76,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.dark,
+                                border: Border.all(color: Colors.white),
+                              ),
+                              child: Center(
+                                child: SvgPicture.asset(
+                                  AppAssets.electricWalletIcon,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Center(
+                            child: SizedBox(
+                              height: 27.3,
+                              width: 27.63,
+                              child: SvgPicture.asset(AppAssets.linkIcon),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                  ),
+                  const SizedBox(
+                    height: 33,
+                  ),
+                  Text(
+                    S.of(context).contract_info,
+                    style: AppStyles.title,
                   ),
                   const SizedBox(
                     height: 15,
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: AppColors.grey1,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 15, right: 15, top: 10.0, bottom: 5),
-                      // child: Text(vc.vc['verifiableCredential'].toString()),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (jsonDecode(vc.vc)[0] != null)
-                            ...(jsonDecode(vc.vc)[0]["credentialSubject"] as Map<String, dynamic>).entries.mapIndexed(
-                              (entry, index) {
-                                return Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(right: 48.0),
-                                          child: Text(
-                                            entry.key,
-                                            softWrap: false,
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              color: AppColors.grey2,
-                                            ),
-                                          ),
-                                        ),
-                                        Flexible(
-                                          child: entry.value is List<dynamic>
-                                              ? Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                                  children: [
-                                                    ...(entry.value as List<dynamic>)
-                                                        .map(
-                                                          (e) => Text(
-                                                            e.toString(),
-                                                            softWrap: true,
-                                                            textAlign: TextAlign.right,
-                                                            style: const TextStyle(
-                                                              color: AppColors.dark,
-                                                              fontSize: 15,
-                                                              fontWeight: FontWeight.w500,
-                                                            ),
-                                                          ),
-                                                        )
-                                                        .toList()
-                                                  ],
-                                                )
-                                              : Text(
-                                                  entry.value.toString(),
-                                                  softWrap: true,
-                                                  textAlign: TextAlign.right,
-                                                  style: const TextStyle(
-                                                    color: AppColors.dark,
-                                                    fontSize: 15,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                );
-                              },
-                            ).toList(),
-                        ],
+                  VcDetailReader(vc: jsonDecode(vc.vc)),
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        S.of(context).activity_log,
+                        style: AppStyles.title,
                       ),
-                    ),
+                      TextButton(
+                        onPressed: () {},
+                        style: ButtonStyle(
+                          overlayColor: MaterialStateProperty.all(
+                            Colors.grey.shade300,
+                          ),
+                        ),
+                        child: Text(
+                          S.of(context).show_all,
+                          style: AppStyles.subtitle,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      ...vc.activity.map(
+                        (e) => Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: ActivityItem(
+                            activity: e,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 100,
                   ),
                 ],
               ),

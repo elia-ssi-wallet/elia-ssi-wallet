@@ -1,10 +1,17 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:developer';
+
 import 'package:elia_ssi_wallet/base/assets/assets.dart';
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
 import 'package:elia_ssi_wallet/base/router/routes.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
+import 'package:elia_ssi_wallet/database/database.dart';
+import 'package:elia_ssi_wallet/generated/l10n.dart';
 import 'package:elia_ssi_wallet/pages/confim_contract_screen/confirm_contract_screen_viewmodel.dart';
 import 'package:elia_ssi_wallet/pages/confim_contract_screen/custom_text_form_field.dart';
 import 'package:elia_ssi_wallet/pages/widgets/circle_painter.dart';
+import 'package:elia_ssi_wallet/pages/widgets/vc_detail_reader.dart';
 import 'package:elia_ssi_wallet/repositories/exchange_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +28,7 @@ class ConfirmContract extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    inspect(vp);
     return Scaffold(
       backgroundColor: Colors.white,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -36,10 +44,11 @@ class ConfirmContract extends StatelessWidget {
                   backgroundColor: AppColors.dark,
                   onPressed: () {
                     Navigator.popUntil(context, (route) => route.settings.name == Routes.home);
+                    ExchangeRepository.pendingRequestDao.deletePendingRequest(vp: vp);
                   },
                   label: Center(
                     child: Text(
-                      'Reject',
+                      S.of(context).reject,
                       textAlign: TextAlign.center,
                       style: AppStyles.button.copyWith(color: AppColors.red),
                     ),
@@ -53,16 +62,27 @@ class ConfirmContract extends StatelessWidget {
                 child: FloatingActionButton.extended(
                   heroTag: 'confirmScreen2',
                   backgroundColor: AppColors.dark,
-                  onPressed: () {
-                    ExchangeRepository.dao.insertVCs(
-                      vc: vp['verifiableCredential'],
+                  onPressed: () async {
+                    ExchangeRepository.pendingRequestDao.deletePendingRequest(vp: vp);
+                    VC newVC = await ExchangeRepository.dao.insertVCs(
+                      vc: vp['verifiableCredential'][0],
                       label: viewModel.issuerNameController.text,
                     );
-                    Navigator.popUntil(context, (route) => route.settings.name == Routes.home);
+                    Navigator.popUntil(
+                      context,
+                      (route) {
+                        if (route.settings.name == Routes.home) {
+                          (route.settings.arguments as Map)["vc"] = newVC;
+                          return true;
+                        } else {
+                          return false;
+                        }
+                      },
+                    );
                   },
-                  label: const Center(
+                  label: Center(
                     child: Text(
-                      'Accept',
+                      S.of(context).accept,
                       textAlign: TextAlign.center,
                       style: AppStyles.button,
                     ),
@@ -116,7 +136,9 @@ class ConfirmContract extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('A new contract is ready. Accept the contract to add it to your wallet'),
+                          Text(
+                            S.of(context).a_new_contract_is_ready,
+                          ),
                           const SizedBox(
                             height: 23,
                           ),
@@ -172,39 +194,11 @@ class ConfirmContract extends StatelessWidget {
                           const SizedBox(
                             height: 15,
                           ),
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: AppColors.grey1,
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 15, right: 15, top: 10.0, bottom: 5),
-                              child: Text(vp['verifiableCredential'].toString()),
-                              // Column(
-                              //   children: [
-                              //     ...viewModel.vCs.map(
-                              //       (e) => Padding(
-                              //         padding: const EdgeInsets.only(bottom: 5.0),
-                              //         child: Row(
-                              //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              //           children: [
-                              //             Text(e.label),
-                              //             Text(
-                              //               e.id.toString(),
-                              //               style: const TextStyle(
-                              //                 color: AppColors.dark,
-                              //                 fontSize: 15,
-                              //                 fontWeight: FontWeight.w500,
-                              //               ),
-                              //             ),
-                              //           ],
-                              //         ),
-                              //       ),
-                              //     ),
-                              //   ],
-                              // ),
-                            ),
-                          ),
+                          ...vp['verifiableCredential'].map((e) {
+                            return VcDetailReader(
+                              vc: e,
+                            );
+                          }),
                           const SizedBox(
                             height: 60,
                           ),

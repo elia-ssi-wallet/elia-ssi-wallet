@@ -7,6 +7,7 @@ import 'package:elia_ssi_wallet/pages/accept_terms_and_conditions/accept_terms_a
 import 'package:elia_ssi_wallet/pages/confim_contract_screen/confirm_contract_screen.dart';
 import 'package:elia_ssi_wallet/pages/home/home_screen.dart';
 import 'package:elia_ssi_wallet/pages/loading_screen/loading_screen.dart';
+import 'package:elia_ssi_wallet/pages/pending_screen/pending_screen.dart';
 import 'package:elia_ssi_wallet/pages/qr_code_scanner/qr_code_scanner.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +15,11 @@ class MyRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case Routes.home:
-        return PlatformRoute(route: HomeScreen(), settings: settings);
+        return PlatformRoute(
+          route: HomeScreen(),
+          // ignore: prefer_const_literals_to_create_immutables
+          settings: RouteSettings(name: settings.name, arguments: {}),
+        );
       case Routes.qr:
         return PlatformRoute(route: QrCodeScanner(), settings: settings);
       case Routes.loading:
@@ -25,6 +30,8 @@ class MyRouter {
         return PlatformRoute(route: ConfirmContract(vp: settings.arguments as dynamic), settings: settings);
       case Routes.acceptTermsAndConditions:
         return PlatformRoute(route: AcceptTermsAndConditions(), settings: settings);
+      case Routes.pendingRequests:
+        return PlatformRoute(route: PendingScreen(), settings: settings);
       default:
         return PlatformRoute(
             route: PlatformScaffold(

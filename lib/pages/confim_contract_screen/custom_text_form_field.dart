@@ -1,7 +1,6 @@
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 
 class CustomTextFormField extends StatelessWidget {
   CustomTextFormField({super.key, required this.controller});
@@ -20,26 +19,24 @@ class CustomTextFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Observer(
-      builder: (context) => TextFormField(
-        cursorColor: AppColors.dark,
-        decoration: InputDecoration(
-          filled: false,
-          fillColor: Colors.transparent,
-          label: const Text('Name this issuer'),
-          labelStyle: AppStyles.normal,
-          border: border,
-          focusedBorder: selectedBorder,
-          enabledBorder: border,
-          disabledBorder: border,
-          focusedErrorBorder: border,
-          focusColor: Colors.black,
-          isDense: true,
-          contentPadding: const EdgeInsets.all(16.0),
-          errorMaxLines: 5,
-        ),
-        controller: controller,
+    return TextFormField(
+      cursorColor: AppColors.dark,
+      decoration: InputDecoration(
+        filled: false,
+        fillColor: Colors.transparent,
+        label: const Text('Name this issuer'),
+        labelStyle: AppStyles.normal,
+        border: border,
+        focusedBorder: selectedBorder,
+        enabledBorder: border,
+        disabledBorder: border,
+        focusedErrorBorder: border,
+        focusColor: Colors.black,
+        isDense: true,
+        contentPadding: const EdgeInsets.all(16.0),
+        errorMaxLines: 5,
       ),
+      controller: controller,
     );
   }
 }

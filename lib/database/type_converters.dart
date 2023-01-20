@@ -1,69 +1,40 @@
+import 'dart:convert';
+import 'package:drift/drift.dart';
+import 'package:elia_ssi_wallet/models/activity.dart';
 
-//* DateTime Converter
-// class DateTimeConverter extends TypeConverter<DateTime, String> {
-//   @override
-//   DateTime? mapToDart(String? fromDb) {
-//     if (fromDb == null) return null;
+// * DateTime Converter
+class StringListConverter extends TypeConverter<List<String>, String> {
+  @override
+  List<String> fromSql(String fromDb) {
+    List<String> stringList = [];
+    List<dynamic> list = json.decode(fromDb);
 
-//     return DateTime.parse(fromDb);
-//   }
+    stringList = list.cast<String>();
 
-//   @override
-//   String? mapToSql(DateTime? value) {
-//     if (value == null) return null;
+    return stringList;
+  }
 
-//     return value.toIso8601String();
-//   }
-// }
+  @override
+  String toSql(List<String> value) {
+    return json.encode(value);
+  }
+}
 
-// //* StringList Converter
-// class StringListConverter extends TypeConverter<List<String>, String> {
-//   @override
-//   List<String>? mapToDart(String? fromDb) {
-//     if (fromDb == null) {
-//       return null;
-//     } else {
-//       List<String> stringList = [];
-//       List<dynamic> list = json.decode(fromDb);
+//* Activity Converter
+class ActivityListConverter extends TypeConverter<List<Activity>, String> {
+  @override
+  List<Activity> fromSql(String fromDb) {
+    List<Activity> activityList = [];
+    List<dynamic> list = json.decode(fromDb);
 
-//       stringList = list.cast<String>();
+    activityList = List<Activity>.from(list.map((model) => Activity.fromJson(model)));
+    return activityList;
+    // var e = jsonDecode(fromDb);
+    // return Activity(id: e["id"], isMainGoal: e['main_goal']);
+  }
 
-//       return stringList;
-//     }
-//   }
-
-//   @override
-//   String? mapToSql(List<String>? value) {
-//     if (value == null) {
-//       return null;
-//     } else {
-//       return json.encode(value);
-//     }
-//   }
-// }
-
-// //* IntegerList Converter
-// class IntegerListConverter extends TypeConverter<List<int>, String> {
-//   @override
-//   List<int>? mapToDart(String? fromDb) {
-//     if (fromDb == null) {
-//       return null;
-//     } else {
-//       List<int> stringList = [];
-//       List<dynamic> list = json.decode(fromDb);
-
-//       stringList = list.cast<int>();
-
-//       return stringList;
-//     }
-//   }
-
-//   @override
-//   String? mapToSql(List<int>? value) {
-//     if (value == null) {
-//       return null;
-//     } else {
-//       return json.encode(value);
-//     }
-//   }
-// }
+  @override
+  String toSql(List<Activity> value) {
+    return jsonEncode(value);
+  }
+}

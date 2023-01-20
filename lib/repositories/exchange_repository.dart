@@ -1,4 +1,5 @@
 import 'package:elia_ssi_wallet/base/globals.dart';
+import 'package:elia_ssi_wallet/database/dao/pending_requests_dao.dart';
 import 'package:elia_ssi_wallet/database/dao/vcs_dao.dart';
 import 'package:elia_ssi_wallet/models/did/did_token.dart';
 import 'package:elia_ssi_wallet/networking/api_manager_service.dart';
@@ -9,6 +10,7 @@ import 'package:logger/logger.dart';
 
 class ExchangeRepository {
   static VCsDao dao = VCsDao(database);
+  static PendingRequestsDao pendingRequestDao = PendingRequestsDao(database);
 
   //* 1.3 [Resident] Initiate issuance exchange using the request URL
   static Future initiateIssuance({
@@ -35,6 +37,7 @@ class ExchangeRepository {
     required dynamic vpRequest,
     required Function(dynamic object) onSuccess,
     required Function(dynamic object) onError,
+    bool showDialogs = true,
   }) async {
     await doCall<dynamic>(
       // ApiManagerService(UnProtectedRestClient().dio).continueExchangeWithDIDAuthProof(exchangeId: exchangeId, transactionId: transactionId, vpRequest: vpRequest),
@@ -46,6 +49,7 @@ class ExchangeRepository {
       errorFunction: (error) async {
         await onError(error);
       },
+      showDialogs: showDialogs,
     );
   }
 
@@ -69,6 +73,7 @@ class ExchangeRepository {
 
   static Future createDidAuthenticationProof({
     required String challenge,
+    required String baseUrl,
     required Function(dynamic object) onSuccess,
     required Function(dynamic object) onError,
   }) async {
@@ -89,7 +94,8 @@ class ExchangeRepository {
       };
 
       await doCall<dynamic>(
-        ApiManagerService(UnProtectedRestClient().dio).createDidAuthenticationProof(body: body),
+        // https://vc-api-dev.energyweb.org/v1/vc-api/presentations/prove/authentication
+        ApiManagerService(UnProtectedRestClient().dio).createDidAuthenticationProof(baseUrl: baseUrl, body: body),
         succesFunction: (object) async {
           Logger().d("createDidAuthenticationProof: $object");
           await onSuccess(object);
@@ -104,5 +110,77 @@ class ExchangeRepository {
 
       onError("No did token");
     }
+  }
+
+  //* Authority Part
+
+  static Future<void> configureExchange({
+    required String baseUrl,
+    required dynamic exchangeDefinitions,
+    required Function(dynamic object) onSuccess,
+    required Function(dynamic object) onError,
+  }) async {
+    await doCall<dynamic>(
+      ApiManagerService(UnProtectedRestClient().dio).configureExchange(baseUrl: baseUrl, exchangeDefinitions: exchangeDefinitions),
+      succesFunction: (object) async {
+        await onSuccess(object);
+      },
+      errorFunction: (error) async {
+        await onError(error);
+      },
+    );
+  }
+
+  static Future<void> issueVC({
+    required String baseUrl,
+    required dynamic vc,
+    required Function(dynamic object) onSuccess,
+    required Function(dynamic object) onError,
+  }) async {
+    await doCall<dynamic>(
+      ApiManagerService(UnProtectedRestClient().dio).issueVC(baseUrl: baseUrl, vc: vc),
+      succesFunction: (object) async {
+        await onSuccess(object);
+      },
+      errorFunction: (error) async {
+        await onError(error);
+      },
+    );
+  }
+
+  static Future<void> wrapVcInVp({
+    required String baseUrl,
+    required dynamic vp,
+    required Function(dynamic object) onSuccess,
+    required Function(dynamic object) onError,
+  }) async {
+    await doCall<dynamic>(
+      ApiManagerService(UnProtectedRestClient().dio).wrapVcInVp(baseUrl: baseUrl, vp: vp),
+      succesFunction: (object) async {
+        await onSuccess(object);
+      },
+      errorFunction: (error) async {
+        await onError(error);
+      },
+    );
+  }
+
+  static Future<void> reviewExchange({
+    required String baseUrl,
+    required String exchangeId,
+    required String transactionId,
+    required dynamic vp,
+    required Function(dynamic object) onSuccess,
+    required Function(dynamic object) onError,
+  }) async {
+    await doCall<dynamic>(
+      ApiManagerService(UnProtectedRestClient().dio).reviewExchange(baseUrl: baseUrl, exchangeId: exchangeId, transactionId: transactionId, vp: vp),
+      succesFunction: (object) async {
+        await onSuccess(object);
+      },
+      errorFunction: (error) async {
+        await onError(error);
+      },
+    );
   }
 }

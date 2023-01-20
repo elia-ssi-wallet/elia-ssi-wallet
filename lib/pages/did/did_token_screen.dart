@@ -24,98 +24,130 @@ class DidTokenScreen extends StatelessWidget {
           systemOverlayStyle: SystemUiOverlayStyle.dark,
           elevation: 0.5,
         ),
-        body: Observer(builder: (context) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: Text(S.of(context).DID, style: AppStyles.title),
-                  ),
-                  TokenTextField(
-                    text: viewModel.didToken?.id ?? "",
-                    subtitle: S.of(context).did_info,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: Text(S.of(context).did_controller_key, style: AppStyles.title),
-                  ),
-                  TokenTextField(
-                    text: viewModel.didToken?.verificationMethod.first.controller ?? "",
-                    subtitle: S.of(context).did_controller_key_info,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: Text(S.of(context).signature_algorithm, style: AppStyles.title),
-                  ),
-                  TokenTextField(
-                    text: viewModel.didToken?.verificationMethod.first.type ?? "",
-                    subtitle: S.of(context).signature_algorithm_info,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: Text(S.of(context).did_private_key, style: AppStyles.title),
-                  ),
-                  TokenTextField(
-                    text: viewModel.didToken?.verificationMethod.first.publicKeyJwk.kid ?? "",
-                    obscure: viewModel.obscure,
-                    onTap: () {
-                      if (viewModel.obscure) {
-                        showPlatformAlertDialog(
-                          title: S.of(context).show_private_key,
-                          subtitle: S.of(context).show_private_key_extra,
-                          isDismissable: true,
-                          actions: [
-                            MaterialButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text(S.of(context).cancel),
-                            ),
-                            MaterialButton(
-                              onPressed: () {
-                                viewModel.obscure = !viewModel.obscure;
-                                Navigator.of(context).pop();
-                              },
-                              child: Text(S.of(context).show),
-                            ),
-                          ],
-                        );
-                      } else {
-                        viewModel.obscure = !viewModel.obscure;
-                      }
-                    },
-                    subtitle: S.of(context).did_private_key_info,
-                  ),
-                  // -----------------
+        body: Observer(
+          builder: (context) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: Text(S.of(context).DID, style: AppStyles.title),
+                    ),
+                    TokenTextField(
+                      text: viewModel.didToken?.id ?? "",
+                      subtitle: S.of(context).did_info,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: Text(S.of(context).did_controller_key, style: AppStyles.title),
+                    ),
+                    TokenTextField(
+                      text: viewModel.didToken?.verificationMethod.first.controller ?? "",
+                      subtitle: S.of(context).did_controller_key_info,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: Text(S.of(context).signature_algorithm, style: AppStyles.title),
+                    ),
+                    TokenTextField(
+                      text: viewModel.didToken?.verificationMethod.first.type ?? "",
+                      subtitle: S.of(context).signature_algorithm_info,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: Text(S.of(context).did_private_key, style: AppStyles.title),
+                    ),
+                    TokenTextField(
+                      text: viewModel.didToken?.verificationMethod.first.publicKeyJwk.kid ?? "",
+                      obscure: viewModel.obscure,
+                      onTap: () {
+                        if (viewModel.obscure) {
+                          showPlatformAlertDialog(
+                            title: S.of(context).show_private_key,
+                            subtitle: S.of(context).show_private_key_extra,
+                            isDismissable: true,
+                            actions: [
+                              MaterialButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text(S.of(context).cancel),
+                              ),
+                              MaterialButton(
+                                onPressed: () {
+                                  viewModel.obscure = !viewModel.obscure;
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text(S.of(context).show),
+                              ),
+                            ],
+                          );
+                        } else {
+                          viewModel.obscure = !viewModel.obscure;
+                        }
+                      },
+                      subtitle: S.of(context).did_private_key_info,
+                    ),
+                    // -----------------
 
-                  // CupertinoButton(
-                  //     child: const Text("create key"),
-                  //     onPressed: () async {
-                  //       await DIDRepository.createDID(onSuccess: (v) async {
-                  //         await DIDRepository.exportKey(
-                  //             didToken: v,
-                  //             onSuccess: (_, __) {
-                  //               print("exported");
-                  //             });
-                  //       });
-                  //     }),
-                  // CupertinoButton(
-                  //     child: const Text("import key"),
-                  //     onPressed: () async {
-                  //       await DIDRepository.importKey(onSuccess: (val) async {
-                  //         await DIDRepository.registerDID(keyId: val, onSuccess: (_) {});
-                  //       });
-                  //     }),
-                ],
+                    // CupertinoButton(
+                    //     child: const Text("create key"),
+                    //     onPressed: () async {
+                    //       await DIDRepository.createDID(onSuccess: (v) async {
+                    //         await DIDRepository.exportKey(
+                    //             didToken: v,
+                    //             onSuccess: (_, __) {
+                    //               print("exported");
+                    //             });
+                    //       });
+                    //     }),
+                    // CupertinoButton(
+                    //     child: const Text("import key"),
+                    //     onPressed: () async {
+                    //       await DIDRepository.importKey(onSuccess: (val) async {
+                    //         await DIDRepository.registerDID(keyId: val, onSuccess: (_) {});
+                    //       });
+                    //     }),
+                    // Center(
+                    //   child: TextButton(
+                    //     onPressed: () => ExchangeRepository.dao.insertTestVC(),
+                    //     child: const Text('Insert Test VC'),
+                    //   ),
+                    // ),
+                    // Center(
+                    //   child: TextButton(
+                    //     onPressed: () => ExchangeRepository.dao.deleteVCs(),
+                    //     child: const Text('Delete all vcs'),
+                    //   ),
+                    // ),
+                    // Center(
+                    //   child: TextButton(
+                    //     onPressed: () => Navigator.of(context).pushNamed(Routes.dbViewer),
+                    //     child: const Text('Database Viewer'),
+                    //   ),
+                    // ),
+                    // Center(
+                    //   child: TextButton(
+                    //     onPressed: () => ExchangeRepository.pendingRequestDao.insertTestPendingRequests(),
+                    //     child: const Text('Insert Test Pending Request'),
+                    //   ),
+                    // ),
+                    // Center(
+                    //   child: TextButton(
+                    //     onPressed: () => ExchangeRepository.pendingRequestDao.deletePendingRequests(),
+                    //     child: const Text('Delete all pending requests'),
+                    //   ),
+                    // ),
+                  ],
+                ),
               ),
-            ),
-          );
-        }),
+            );
+          },
+        ),
       ),
     );
   }

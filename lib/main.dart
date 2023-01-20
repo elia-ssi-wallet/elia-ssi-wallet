@@ -1,3 +1,4 @@
+import 'package:elia_ssi_wallet/base/assets/assets.dart';
 import 'package:elia_ssi_wallet/base/base_utils.dart';
 import 'package:elia_ssi_wallet/base/get_it.dart';
 import 'package:elia_ssi_wallet/base/globals.dart';
@@ -6,6 +7,7 @@ import 'package:elia_ssi_wallet/database/mobile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'app.dart';
 
@@ -24,6 +26,8 @@ void main() async {
 
   clearSecureStorageOnReinstall();
 
+  preCacheImages();
+
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
   bool? accepted = sharedPreferences.getBool("tos_accepted");
@@ -35,4 +39,30 @@ void main() async {
   runApp(App(initialRoute: initialRoute));
 
   FlutterNativeSplash.remove();
+}
+
+preCacheImages() async {
+  await Future.wait([
+    precachePicture(
+      ExactAssetPicture(
+        SvgPicture.svgStringDecoderBuilder,
+        AppAssets.scanIcon,
+      ),
+      null,
+    ),
+    precachePicture(
+      ExactAssetPicture(
+        SvgPicture.svgStringDecoderBuilder,
+        AppAssets.noContractIcon,
+      ),
+      null,
+    ),
+    precachePicture(
+      ExactAssetPicture(
+        SvgPicture.svgStringDecoderBuilder,
+        AppAssets.notificationIcon,
+      ),
+      null,
+    ),
+  ]);
 }

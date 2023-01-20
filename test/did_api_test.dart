@@ -34,12 +34,12 @@ void main() {
 
     String did = 'did:key:z6Mkhki7hCyQkLufYA6X1gvhn4Kx21eRraVG9NggipDNmMfx';
 
+    final client = ApiManagerService(TestRestClient().dio);
+
     test(
       'Create DID',
       () async {
         try {
-          final client = ApiManagerService(TestRestClient().dio);
-
           dynamic result = await client.createDID(body: body);
 
           DIDToken token = DIDToken.fromJson(result);
@@ -61,8 +61,6 @@ void main() {
       'Export DID',
       () async {
         try {
-          final client = ApiManagerService(TestRestClient().dio);
-
           dynamic result = await client.exportKey(keyId: keyId);
 
           expect(result['publicKeyThumbprint'], keyId);
@@ -84,8 +82,6 @@ void main() {
       'Import DID',
       () async {
         try {
-          final client = ApiManagerService(TestRestClient().dio);
-
           dynamic result = await client.importKey(body: privKeyPubKey);
 
           expect(result['keyId'], keyId);
@@ -99,8 +95,6 @@ void main() {
       'Register DID',
       () async {
         try {
-          final client = ApiManagerService(TestRestClient().dio);
-
           dynamic registerBody = {
             "method": "key",
             "keyId": keyId,
@@ -125,8 +119,6 @@ void main() {
     );
 
     test('Check if DID exists', () async {
-      final client = ApiManagerService(TestRestClient().dio);
-
       try {
         dynamic response = await client.checkIfDIDExists(did: did);
 

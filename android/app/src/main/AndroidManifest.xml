@@ -2,7 +2,7 @@
     package="com.example.elia_ssi_wallet">
    <application
         android:label="elia_ssi_wallet"
-        android:name="Elia SSI Wallet"
+        android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

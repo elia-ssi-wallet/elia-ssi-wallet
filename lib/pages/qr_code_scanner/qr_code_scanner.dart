@@ -2,9 +2,13 @@ import 'dart:convert';
 
 import 'package:elia_ssi_wallet/base/assets/assets.dart';
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
+import 'package:elia_ssi_wallet/base/extensions/strings.dart';
+import 'package:elia_ssi_wallet/base/helpers/alert_dialog_helper.dart';
 import 'package:elia_ssi_wallet/base/router/routes.dart';
+import 'package:elia_ssi_wallet/generated/l10n.dart';
 import 'package:elia_ssi_wallet/pages/qr_code_scanner/qr_code_scanner_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -19,42 +23,77 @@ class QrCodeScanner extends StatelessWidget {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          MobileScanner(
-            allowDuplicates: false,
-            onDetect: (barcode, args) {
-              if (barcode.rawValue == null) {
-                debugPrint('Failed to scan QrCode');
-              } else {
-                final String code = barcode.rawValue!;
-                debugPrint('QrCode found! $code');
-                dynamic jsonObject = jsonDecode(code);
-                debugPrint('QR url ${jsonObject['outOfBandInvitation']['body']['url']}');
-                Navigator.pushReplacementNamed(
-                  context,
-                  Routes.loading,
-                  arguments: jsonObject['outOfBandInvitation']['body']['url'],
-                );
-
-                // ExchangeRepository.initiateIssuance(
-                //   exchangeURL: jsonObject['outOfBandInvitation']['body']['url'],
-                //   onSuccess: (vpRequest) {
-                //     print('serviceEndpoint: ${vpRequest['vpRequest']['interact']['service'][0]['serviceEndpoint']}');
-                //     ExchangeRepository.createDidAuthenticationProof(
-                //       challenge: vpRequest['vpRequest']['challenge'],
-                //       onSuccess: (vp) {
-                //         viewModel.periodicCall(
-                //           serviceEndpoint: vpRequest['vpRequest']['interact']['service'][0]['serviceEndpoint'],
-                //           vp: vp,
-                //         );
-                //       },
-                //       onError: (_) {},
-                //     );
-                //   },
-                //   onError: (_) {},
-                // );
-                // Navigator.pop(context);
-              }
-            },
+          Observer(
+            builder: (_) => MobileScanner(
+              key: UniqueKey(),
+              controller: viewModel.mobileScannerController,
+              onDetect: (barcode, args) {
+                if (barcode.rawValue == null) {
+                  debugPrint('Failed to scan QrCode');
+                } else {
+                  final String code = barcode.rawValue!;
+                  debugPrint('QrCode found! $code');
+                  dynamic jsonObject = jsonDecode(code);
+                  if (jsonObject['outOfBandInvitation']['body']['url'] != null) {
+                    String hostName = (jsonObject['outOfBandInvitation']['body']['url'] as String).prettifyDomain();
+                    if (viewModel.connections.any((element) => element == hostName)) {
+                      viewModel.mobileScannerController.dispose();
+                      Navigator.pushNamed(
+                        context,
+                        Routes.loading,
+                        arguments: jsonObject['outOfBandInvitation']['body']['url'],
+                      ).then((value) => viewModel.mobileScannerController = MobileScannerController());
+                    } else {
+                      showPlatformAlertDialog(
+                        title: S.of(context).new_connection,
+                        subtitle: S.of(context).new_connection_communication('connection'),
+                        isDismissable: true,
+                        actions: [
+                          MaterialButton(
+                            child: Text(
+                              S.of(context).always_accept,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            onPressed: () {
+                              viewModel.dao.insertConnection(connectionName: hostName);
+                              viewModel.mobileScannerController.dispose();
+                              Navigator.pushNamed(
+                                context,
+                                Routes.loading,
+                                arguments: jsonObject['outOfBandInvitation']['body']['url'],
+                              ).then((value) => viewModel.mobileScannerController = MobileScannerController());
+                            },
+                          ),
+                          MaterialButton(
+                            child: Text(
+                              S.of(context).accept_once,
+                            ),
+                            onPressed: () {
+                              viewModel.mobileScannerController.dispose();
+                              Navigator.pushNamed(
+                                context,
+                                Routes.loading,
+                                arguments: jsonObject['outOfBandInvitation']['body']['url'],
+                              ).then((value) => viewModel.mobileScannerController = MobileScannerController());
+                            },
+                          ),
+                          MaterialButton(
+                            child: Text(
+                              S.of(context).dont_accept,
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    }
+                  }
+                }
+              },
+            ),
           ),
           SafeArea(
             child: Padding(
@@ -66,6 +105,7 @@ class QrCodeScanner extends StatelessWidget {
                   child: InkWell(
                     onTap: () {
                       Navigator.pop(context);
+                      viewModel.mobileScannerController.dispose();
                     },
                     borderRadius: BorderRadius.circular(100),
                     // color: Colors.black,
@@ -75,11 +115,11 @@ class QrCodeScanner extends StatelessWidget {
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.only(left: 16.0, top: 80),
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0, top: 80),
             child: Text(
-              'Scan QR Code',
-              style: TextStyle(
+              S.of(context).scan_qr_code,
+              style: const TextStyle(
                 color: AppColors.dark,
                 fontSize: 34,
                 fontWeight: FontWeight.bold,
