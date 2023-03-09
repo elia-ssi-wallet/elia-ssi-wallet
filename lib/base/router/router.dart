@@ -4,6 +4,7 @@ import 'package:elia_ssi_wallet/base/platform_widgets/platform_route.dart';
 import 'package:elia_ssi_wallet/base/platform_widgets/platform_scaffold.dart';
 import 'package:elia_ssi_wallet/base/router/routes.dart';
 import 'package:elia_ssi_wallet/pages/accept_terms_and_conditions/accept_terms_and_conditions_screen.dart';
+import 'package:elia_ssi_wallet/pages/compatible_contracts_screen/compatible_contracts_screen.dart';
 import 'package:elia_ssi_wallet/pages/confim_contract_screen/confirm_contract_screen.dart';
 import 'package:elia_ssi_wallet/pages/home/home_screen.dart';
 import 'package:elia_ssi_wallet/pages/loading_screen/loading_screen.dart';
@@ -32,6 +33,14 @@ class MyRouter {
         return PlatformRoute(route: AcceptTermsAndConditions(), settings: settings);
       case Routes.pendingRequests:
         return PlatformRoute(route: PendingScreen(), settings: settings);
+      case Routes.compatibleContractsScreen:
+        return PlatformRoute(
+            route: CompatibleContractsScreen(
+              type: (settings.arguments as dynamic)['type'],
+              exchangeId: (settings.arguments as dynamic)['exchangeId'],
+            ),
+            settings: settings);
+
       default:
         return PlatformRoute(
             route: PlatformScaffold(

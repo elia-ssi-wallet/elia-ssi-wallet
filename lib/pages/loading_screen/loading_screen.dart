@@ -1,5 +1,6 @@
 import 'package:elia_ssi_wallet/base/assets/assets.dart';
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
+import 'package:elia_ssi_wallet/base/router/routes.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
 import 'package:elia_ssi_wallet/generated/l10n.dart';
 import 'package:elia_ssi_wallet/pages/loading_screen/loading_screen_viewmodel.dart';
@@ -33,6 +34,28 @@ class _LoadingScreenState extends State<LoadingScreen> {
       floatingActionButton: Observer(
         builder: (_) => Visibility(
           visible: viewModel.error,
+          replacement: viewModel.showPending
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: FloatingActionButton.extended(
+                      heroTag: 'go_to_pending',
+                      backgroundColor: AppColors.dark,
+                      onPressed: () {
+                        Navigator.popUntil(context, (route) => route.settings.name == Routes.home);
+                      },
+                      label: Center(
+                        child: Text(
+                          S.of(context).view_pending_requests,
+                          textAlign: TextAlign.center,
+                          style: AppStyles.button,
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              : const SizedBox(),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: SizedBox(
@@ -130,7 +153,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
                                         )
                                       : Center(
                                           child: SvgPicture.asset(
-                                            AppAssets.linkIcon,
+                                            viewModel.showPending ? AppAssets.pendingIcon : AppAssets.linkIcon,
                                           ),
                                         ),
                                 ),
@@ -148,19 +171,27 @@ class _LoadingScreenState extends State<LoadingScreen> {
                               fontSize: 17,
                             ),
                           )
-                        : Text(
-                            S.of(context).adding_contract,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 17,
-                            ),
-                          ),
+                        : viewModel.showPending
+                            ? Text(
+                                S.of(context).we_are_processing_your_request,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 17,
+                                ),
+                              )
+                            : Text(
+                                S.of(context).adding_contract,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 17,
+                                ),
+                              ),
                     const SizedBox(
                       height: 10,
                     ),
                     Observer(
                       builder: (_) => Text(
-                        viewModel.status,
+                        viewModel.showPending ? S.of(context).we_are_processing_your_request_extra : viewModel.status,
                         style: const TextStyle(
                           fontSize: 15,
                           color: AppColors.grey2,

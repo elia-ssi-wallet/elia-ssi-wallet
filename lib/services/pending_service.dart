@@ -15,10 +15,11 @@ abstract class _PendingService with Store {
 
   _PendingService() {
     pendingRequests.listen((value) async {
+      print("pending requests -> $value");
       for (var request in value) {
         Logger().d("${DateTime.now()} -> $value");
         bool exchangeCompleted = false;
-        while (!exchangeCompleted) {
+        while (!exchangeCompleted && request.error == null) {
           await Future.delayed(const Duration(seconds: 10));
 
           await ExchangeRepository.continueExchangeBySubmittingDIDProof(
@@ -30,8 +31,12 @@ abstract class _PendingService with Store {
                 exchangeCompleted = true;
               }
             },
-            onError: (e) {
-              return false;
+            onError: (e) async {
+              // ExchangeRepository.pendingRequestDao.updatePendingRequest(id: request.id, );
+              print("onerror");
+              await ExchangeRepository.pendingRequestDao.updatePendingRequestWithError(id: request.id);
+
+              exchangeCompleted = true;
             },
             showDialogs: false,
           );

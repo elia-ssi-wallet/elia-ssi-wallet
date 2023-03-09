@@ -12,66 +12,6 @@ void main() {
     throw Exception(res?.data);
   }
 
-  // group('Initiate Issuence & Create Did Authentication Proof', () {
-  //   dynamic body = {
-  //     "did": 'did:key:z6MkqDkpUZMebGpkn6YE6XmFWodMKWeBKurWPMJqndgTrEpz',
-  //     "options": {
-  //       "verificationMethod": 'did:key:z6MkqDkpUZMebGpkn6YE6XmFWodMKWeBKurWPMJqndgTrEpz#z6MkqDkpUZMebGpkn6YE6XmFWodMKWeBKurWPMJqndgTrEpz',
-  //       "proofPurpose": "authentication",
-  //       "challenge": 'ddd41098-17b3-4a14-a644-7854ff373084',
-  //     },
-  //   };
-
-  //   String exchangeURL = 'https://vc-api-dev.energyweb.org/v1/vc-api/exchanges/test';
-
-  //   final client = ApiManagerService(TestRestClient().dio);
-
-  //   test(
-  //     'Initiate Issuance',
-  //     () async {
-  //       try {
-  //         dynamic result = await client.initiateIssuance(exchangeURL: exchangeURL);
-
-  //         expect(result['vpRequest']['challenge'].runtimeType, String);
-
-  //         expect(result['vpRequest']['interact']['service'][0]['serviceEndpoint'].runtimeType, String);
-
-  //         expect(result['processingInProgress'].runtimeType, bool);
-
-  //         // body['options']['challenge'] = result['vpRequest']['challenge'];
-  //       } on DioError catch (e) {
-  //         handleError(e);
-  //       }
-  //     },
-  //   );
-
-  //   test(
-  //     'Create Did Authentication Proof',
-  //     () async {
-  //       try {
-  //         dynamic result = await client.createDidAuthenticationProof(
-  //           baseUrl: exchangeURL.getBaseUrlfromExchangeUrl(),
-  //           body: body,
-  //         );
-
-  //         expect(result['@context'].runtimeType, List<dynamic>);
-  //         expect(result['type'].runtimeType, String);
-  //         expect(result['proof']['type'].runtimeType, String);
-  //         expect(result['proof']['proofPurpose'].runtimeType, String);
-  //         expect(result['proof']['challenge'].runtimeType, String);
-  //         expect(result['proof']['verificationMethod'].runtimeType, String);
-  //         expect(result['proof']['verificationMethod'].substring(0, 7), 'did:key');
-  //         expect(result['proof']['created'].runtimeType, String);
-  //         expect(result['proof']['jws'].runtimeType, String);
-  //         expect(result['holder'].runtimeType, String);
-  //         expect(result['holder'].substring(0, 7), 'did:key');
-  //       } on DioError catch (e) {
-  //         handleError(e);
-  //       }
-  //     },
-  //   );
-  // });
-
   group('Presentation sequence', () {
     final client = ApiManagerService(TestRestClient().dio);
 
@@ -100,6 +40,22 @@ void main() {
 
     String challenge = const Uuid().v4();
 
+    dynamic presentationWithCredential = {
+      "@context": ["https://www.w3.org/2018/credentials/v1"],
+      "type": "VerifiablePresentation",
+      "proof": {
+        "type": "Ed25519Signature2018",
+        "proofPurpose": "authentication",
+        "challenge": "d98b491b-6791-478d-9c46-85baec76d2dd",
+        "verificationMethod": "did:key:z6MkgP6wSUAiiDHGVgaJYptPgcAtSfy6Azp9SxVSy9B611ew#z6MkgP6wSUAiiDHGVgaJYptPgcAtSfy6Azp9SxVSy9B611ew",
+        "created": "2023-03-08T07:42:04.043Z",
+        "jws": "eyJhbGciOiJFZERTQSIsImNyaXQiOlsiYjY0Il0sImI2NCI6ZmFsc2V9..EfmkojTqPtg6-el1JbXZGG1RFuVq2jQlVoviIJfm8Ev09AlFN2JdEd9bA9nBG-7Ok8KGdeIv0P-c2zMXhr1qDQ"
+      },
+      "holder": "did:key:z6MkgP6wSUAiiDHGVgaJYptPgcAtSfy6Azp9SxVSy9B611ew"
+    };
+
+    String serviceEndpoint = 'https://vc-api-dev.energyweb.org/v1/vc-api/exchanges/test/9a2399d1-67ea-401b-bc77-088953f69e01';
+
     test(
       'Configure Exchange',
       () async {
@@ -127,10 +83,6 @@ void main() {
           expect(result['vpRequest']['interact']['service'][0]['serviceEndpoint'].runtimeType, String);
 
           expect(result['processingInProgress'].runtimeType, bool);
-
-          challenge = result['vpRequest']['challenge'];
-
-          // body['options']['challenge'] = result['vpRequest']['challenge'];
         } on DioError catch (e) {
           handleError(e);
         }
@@ -162,13 +114,69 @@ void main() {
             },
           };
           try {
-            dynamic result = await client.createDidAuthenticationProof(
+            client.createDidAuthenticationProof(
               baseUrl: exchangeUrl.getBaseUrlfromExchangeUrl(),
               body: didAuthProofBody,
             );
           } on DioError catch (e) {
             handleError(e);
           }
+        } on DioError catch (e) {
+          handleError(e);
+        }
+      },
+    );
+
+    test(
+      'Submit Did Authentication Proof',
+      () async {
+        try {
+          dynamic result = await client.continueExchangeBySubmitting(
+            endpoint: serviceEndpoint,
+            presentationWithCredential: presentationWithCredential,
+          );
+
+          expect(result['errors'].runtimeType, List);
+          expect(result['errors'].length, 0);
+          expect(result['vpRequest']['challenge'].runtimeType, String);
+          expect(result['vpRequest']['query'].runtimeType, List);
+          expect(result['vpRequest']['query'][0]['type'].runtimeType, String);
+          expect(result['vpRequest']['query'][0]['type'], 'DIDAuth');
+          expect(result['vpRequest']['interact']['service'].runtimeType, List);
+          expect(result['vpRequest']['interact']['service'][0]['type'].runtimeType, String);
+          expect(result['vpRequest']['interact']['service'][0]['type'], 'MediatedHttpPresentationService2021');
+          expect(result['processingInProgress'].runtimeType, bool);
+          expect(result['processingInProgress'], true);
+        } on DioError catch (e) {
+          handleError(e);
+        }
+      },
+    );
+
+    test(
+      'Finish exchange',
+      () async {
+        try {
+          dynamic result = await client.continueExchangeBySubmitting(
+            endpoint: serviceEndpoint,
+            presentationWithCredential: presentationWithCredential,
+          );
+
+          expect(result['errors'].runtimeType, List);
+          expect(result['errors'].length, 0);
+          expect(result['vp']['type'].runtimeType, List);
+          expect(result['vp']['type'][0].runtimeType, String);
+          expect(result['vp']['type'][0], 'VerifiablePresentation');
+          expect(result['vp']['verifiableCredential'].runtimeType, List);
+          expect(result['vp']['verifiableCredential'][0]['type'][0].runtimeType, String);
+          expect(result['vp']['verifiableCredential'][0]['type'][0], 'VerifiableCredential');
+          expect(result['vp']['proof']['type'].runtimeType, String);
+          expect(result['vp']['proof']['verificationMethod'].runtimeType, String);
+          expect(result['vp']['proof']['created'].runtimeType, String);
+          expect(DateTime.parse(result['vp']['proof']['created']).runtimeType, DateTime);
+          expect(result['vp']['proof']['jws'].runtimeType, String);
+          expect(result['processingInProgress'].runtimeType, bool);
+          expect(result['processingInProgress'], false);
         } on DioError catch (e) {
           handleError(e);
         }

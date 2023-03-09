@@ -6,4 +6,5 @@ class Routes {
   static const confirmContract = '/confirmContract';
   static const acceptTermsAndConditions = '/acceptTermsAndConditions';
   static const pendingRequests = '/pendingRequests';
+  static const compatibleContractsScreen = '/compatibleContractsScreen';
 }

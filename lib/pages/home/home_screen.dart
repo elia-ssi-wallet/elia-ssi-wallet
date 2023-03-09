@@ -6,10 +6,11 @@ import 'package:elia_ssi_wallet/database/database.dart';
 import 'package:elia_ssi_wallet/generated/l10n.dart';
 import 'package:elia_ssi_wallet/pages/did/did_token_screen.dart';
 import 'package:elia_ssi_wallet/pages/home/home_screen_viewmodel.dart';
-import 'package:elia_ssi_wallet/pages/home/widgets/empty_state_contracts.dart';
+import 'package:elia_ssi_wallet/pages/home/widgets/empty_state_contracts%20copy.dart';
+import 'package:elia_ssi_wallet/pages/home/widgets/empty_state_pending_requests.dart';
 import 'package:elia_ssi_wallet/pages/home/widgets/new_contract_notification.dart';
-import 'package:elia_ssi_wallet/pages/home/widgets/pending_requests_notification.dart';
 import 'package:elia_ssi_wallet/pages/home/widgets/vc_item.dart';
+import 'package:elia_ssi_wallet/pages/pending_screen/widgets/pending_item.dart';
 import 'package:elia_ssi_wallet/pages/widgets/background_circles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ class HomeScreen extends StatelessWidget {
 
   final ScrollController scrollControllerExternalContracts = ScrollController();
   final ScrollController scrollControllerSelfSigned = ScrollController();
+  final ScrollController scrollControllerPending = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +46,13 @@ class HomeScreen extends StatelessWidget {
               child: FloatingActionButton.extended(
                 backgroundColor: AppColors.dark,
                 onPressed: () async {
+                  // Navigator.of(context).pushNamed(
+                  //   Routes.compatibleContractsScreen,
+                  //   arguments: {
+                  //     'type': 'VerifiableCredential',
+                  //     'exchangeId': 'test_consent_14',
+                  //   },
+                  // );
                   Navigator.of(context).pushNamed(Routes.qr).then(
                     (_) async {
                       final arguments = ModalRoute.of(context)?.settings.arguments;
@@ -160,33 +169,9 @@ class HomeScreen extends StatelessWidget {
                       );
                     },
                   ),
-                  Observer(
-                    builder: (_) => AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      child: viewModel.pendingRequests.value?.isNotEmpty == true
-                          ? const Align(
-                              alignment: Alignment.center,
-                              child: PendingRequestsNotification(),
-                            )
-                          : const SizedBox.shrink(),
-                      transitionBuilder: (child, animation) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: ScaleTransition(
-                            scale: animation,
-                            alignment: Alignment.topCenter,
-                            child: SizeTransition(
-                              sizeFactor: animation,
-                              child: child,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
                   Expanded(
                     child: DefaultTabController(
-                      length: 2,
+                      length: 3,
                       child: SizedBox(
                         width: MediaQuery.of(context).size.width,
                         child: Column(
@@ -209,6 +194,9 @@ class HomeScreen extends StatelessWidget {
                                     ),
                                     Tab(
                                       text: S.of(context).self_signed,
+                                    ),
+                                    Tab(
+                                      text: S.of(context).pending,
                                     )
                                   ],
                                 ),
@@ -259,6 +247,43 @@ class HomeScreen extends StatelessWidget {
                                       ),
                                     ),
                                   ),
+                                  Observer(
+                                    builder: (_) => Visibility(
+                                      visible: viewModel.pendingRequests.value?.isNotEmpty == true,
+                                      replacement: const EmptyStatePendingRequests(),
+                                      child: Scrollbar(
+                                        controller: scrollControllerPending,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                              child: Text(
+                                                S.of(context).pending_info,
+                                                style: AppStyles.infoTextStyle,
+                                              ),
+                                            ),
+                                            Flexible(
+                                              child: ListView.builder(
+                                                controller: scrollControllerPending,
+                                                itemCount: viewModel.pendingRequests.value?.length ?? 0,
+                                                padding: const EdgeInsets.only(bottom: 100),
+                                                itemBuilder: (BuildContext context, int index) {
+                                                  PendingRequest? pendingRequest = viewModel.pendingRequests.value?[index];
+                                                  if (viewModel.pendingRequests.value?[index] != null) {
+                                                    // return VcItem(vc: viewModel.pendingRequests.value![index]);
+                                                    return PendingItem(pendingRequest: pendingRequest!);
+                                                  } else {
+                                                    return const SizedBox.shrink();
+                                                  }
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -275,4 +300,86 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+
+  dynamic testConsentRequest = {
+    "exchangeId": "test_consent_11",
+    "query": [
+      {
+        "type": "PresentationDefinition",
+        "credentialQuery": [
+          {
+            "presentationDefinition": {
+              "id": "286bc1e0-f1bd-488a-a873-8d71be3c690e",
+              "input_descriptors": [
+                {
+                  "id": "consent_agreement",
+                  "name": "Consent Agreement",
+                  "constraints": {
+                    "subject_is_issuer": "required",
+                    "fields": [
+                      {
+                        "path": ["\$.id"],
+                        "filter": {"const": "urn:uuid:49f69fb8-f256-4b2e-b15d-c7ebec3a507e"}
+                      },
+                      {
+                        "path": ["\$.@context"],
+                        "filter": {
+                          "\$schema": "http://json-schema.org/draft-07/schema#",
+                          "type": "array",
+                          "items": [
+                            {"const": "https://www.w3.org/2018/credentials/v1"},
+                            {"\$ref": "#/definitions/eliaGroupContext"}
+                          ],
+                          "additionalItems": false,
+                          "minItems": 2,
+                          "maxItems": 2,
+                          "definitions": {
+                            "eliaGroupContext": {
+                              "type": "object",
+                              "properties": {
+                                "elia": {"const": "https://www.eliagroup.eu/ld-context-2022#"},
+                                "consent": {"const": "elia:consent"}
+                              },
+                              "additionalProperties": true,
+                              "required": ["elia", "consent"]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "path": ["\$.credentialSubject"],
+                        "filter": {
+                          "type": "object",
+                          "properties": {
+                            "consent": {"const": "I consent to such and such"}
+                          },
+                          "additionalProperties": true
+                        }
+                      },
+                      {
+                        "path": ["\$.type"],
+                        "filter": {
+                          "type": "array",
+                          "items": [
+                            {"const": "VerifiableCredential"}
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "interactServices": [
+      {"type": "UnmediatedHttpPresentationService2021"}
+    ],
+    "callback": [
+      {"url": "https://webhook.site/83213d5a-e1ab-46ad-b284-372dcae1e6a9"}
+    ],
+    "isOneTime": true
+  };
 }

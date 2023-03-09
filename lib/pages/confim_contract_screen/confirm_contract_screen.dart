@@ -107,7 +107,9 @@ class ConfirmContract extends StatelessWidget {
                   handle: sliverOverlapAbsorberHandle,
                   sliver: CupertinoSliverNavigationBar(
                     automaticallyImplyLeading: false,
-                    largeTitle: const Text('Add Contract'),
+                    largeTitle: Text(
+                      S.of(context).add_contract,
+                    ),
                     backgroundColor: Colors.white,
                     border: null,
                     trailing: Material(
@@ -138,6 +140,7 @@ class ConfirmContract extends StatelessWidget {
                         children: [
                           Text(
                             S.of(context).a_new_contract_is_ready,
+                            style: AppStyles.subtitle,
                           ),
                           const SizedBox(
                             height: 23,
@@ -183,13 +186,9 @@ class ConfirmContract extends StatelessWidget {
                           const SizedBox(
                             height: 40,
                           ),
-                          const Text(
-                            'Contract info',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.dark,
-                            ),
+                          Text(
+                            S.of(context).contract_info,
+                            style: AppStyles.title,
                           ),
                           const SizedBox(
                             height: 15,

@@ -5,4 +5,5 @@ class PendingRequests extends Table {
   TextColumn get serviceEndpoint => text()();
   TextColumn get vp => text()();
   TextColumn get vpVc => text().nullable()();
+  BoolColumn get error => boolean().nullable()();
 }

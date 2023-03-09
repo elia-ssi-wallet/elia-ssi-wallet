@@ -10,4 +10,5 @@ abstract class AppAssets {
   static const exclamationMark = "assets/icons/exclamation_mark.svg";
   static const notificationIcon = "assets/icons/notification_icon.svg";
   static const noContractIcon = "assets/icons/no_contract_icon.svg";
+  static const pendingIcon = "assets/icons/pending_icon.svg";
 }

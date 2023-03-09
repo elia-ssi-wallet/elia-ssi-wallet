@@ -49,9 +49,19 @@ class PendingRequestsDao extends DatabaseAccessor<Database> with _$PendingReques
       ));
   }
 
+  Future<void> updatePendingRequestWithError({required int id}) async {
+    (update(pendingRequests)
+      ..where((tbl) => tbl.id.equals(id))
+      ..write(
+        const PendingRequestsCompanion(error: Value(true)),
+      ));
+  }
+
   Future<void> deletePendingRequests() => delete(pendingRequests).go();
 
   Future<void> deletePendingRequest({required dynamic vp}) => (delete(pendingRequests)..where((tbl) => tbl.vpVc.equals(jsonEncode(vp)))).go();
+
+  Future<void> deletePendingRequestWithId({required int id}) => (delete(pendingRequests)..where((tbl) => tbl.id.equals(id))).go();
 
   Future<List<PendingRequest>> getPendingRequests() => select(pendingRequests).get();
 

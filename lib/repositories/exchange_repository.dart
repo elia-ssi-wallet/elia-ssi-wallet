@@ -26,6 +26,7 @@ class ExchangeRepository {
       errorFunction: (error) async {
         await onError(error);
       },
+      showDialogs: false,
     );
   }
 
@@ -68,6 +69,7 @@ class ExchangeRepository {
       errorFunction: (error) async {
         await onError(error);
       },
+      showDialogs: false,
     );
   }
 
@@ -104,6 +106,7 @@ class ExchangeRepository {
           Logger().e("createDidAuthenticationProof: $error");
           await onError(error);
         },
+        showDialogs: false,
       );
     } else {
       Logger().e("No did token");
@@ -128,6 +131,7 @@ class ExchangeRepository {
       errorFunction: (error) async {
         await onError(error);
       },
+      showDialogs: false,
     );
   }
 
@@ -145,6 +149,7 @@ class ExchangeRepository {
       errorFunction: (error) async {
         await onError(error);
       },
+      showDialogs: false,
     );
   }
 
@@ -162,6 +167,7 @@ class ExchangeRepository {
       errorFunction: (error) async {
         await onError(error);
       },
+      showDialogs: false,
     );
   }
 
@@ -181,6 +187,7 @@ class ExchangeRepository {
       errorFunction: (error) async {
         await onError(error);
       },
+      showDialogs: false,
     );
   }
 }

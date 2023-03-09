@@ -25,6 +25,9 @@ abstract class _LoadingScreenViewModel with Store {
   @observable
   String status = 'status';
 
+  @computed
+  bool get showPending => attempts >= 5;
+
   Future<void> initiateIssuance({required String exchangeUrl, required context}) async {
     status = 'Initiating issuance';
     ExchangeRepository.initiateIssuance(
@@ -65,7 +68,7 @@ abstract class _LoadingScreenViewModel with Store {
   }
 
   Future<void> periodicCall({required String serviceEndpoint, required dynamic vp, required context}) async {
-    while (!exchangeCompleted) {
+    while (!exchangeCompleted && !error) {
       await Future.delayed(
         Duration(seconds: attempts),
         () async {
@@ -94,6 +97,7 @@ abstract class _LoadingScreenViewModel with Store {
               status = 'Submitting DID proof failed';
               error = true;
             },
+            showDialogs: false,
           );
         },
       );

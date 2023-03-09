@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 
-import 'package:logger/logger.dart';
 import 'package:elia_ssi_wallet/generated/l10n.dart';
 import 'package:dio/dio.dart';
 
@@ -12,8 +11,8 @@ class ErrorInterceptor extends Interceptor {
   final bool fullError;
   @override
   Future onError(DioError err, handler) async {
-    Logger().e(err.toString());
-    Logger().e(err.response.toString());
+    // Logger().e(err.toString());
+    // Logger().e(err.response.toString());
 
     late DioError dioError;
 

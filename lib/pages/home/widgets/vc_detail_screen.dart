@@ -156,7 +156,7 @@ class VCDetailScreen extends StatelessWidget {
                   const SizedBox(
                     height: 15,
                   ),
-                  VcDetailReader(vc: jsonDecode(vc.vc)),
+                  VcDetailReader(vc: jsonDecode(vc.vc)[0]),
                   const SizedBox(
                     height: 25,
                   ),

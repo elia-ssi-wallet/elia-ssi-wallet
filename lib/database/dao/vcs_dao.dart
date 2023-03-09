@@ -80,9 +80,8 @@ class VCsDao extends DatabaseAccessor<Database> with _$VCsDaoMixin {
           }
         }))
       .watch();
-  //     .map((event) {
-  //   return event.where((element) => element.types.map((e) => e.toLowerCase()).contains(query?.toLowerCase())).toList();
-  // });
+
+  Future<List<VC>> searchVcFuture(String query) => (select(vCs)..where((tbl) => tbl.types.contains(query.toLowerCase()))).get();
 }
 
 dynamic testVC = [

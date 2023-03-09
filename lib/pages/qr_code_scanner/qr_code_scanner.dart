@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:elia_ssi_wallet/base/assets/assets.dart';
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
-import 'package:elia_ssi_wallet/base/extensions/strings.dart';
 import 'package:elia_ssi_wallet/base/helpers/alert_dialog_helper.dart';
 import 'package:elia_ssi_wallet/base/router/routes.dart';
 import 'package:elia_ssi_wallet/generated/l10n.dart';
@@ -35,61 +34,53 @@ class QrCodeScanner extends StatelessWidget {
                   debugPrint('QrCode found! $code');
                   dynamic jsonObject = jsonDecode(code);
                   if (jsonObject['outOfBandInvitation']['body']['url'] != null) {
-                    String hostName = (jsonObject['outOfBandInvitation']['body']['url'] as String).prettifyDomain();
-                    if (viewModel.connections.any((element) => element == hostName)) {
-                      viewModel.mobileScannerController.dispose();
-                      Navigator.pushNamed(
-                        context,
-                        Routes.loading,
-                        arguments: jsonObject['outOfBandInvitation']['body']['url'],
-                      ).then((value) => viewModel.mobileScannerController = MobileScannerController());
-                    } else {
-                      showPlatformAlertDialog(
-                        title: S.of(context).new_connection,
-                        subtitle: S.of(context).new_connection_communication('connection'),
-                        isDismissable: true,
-                        actions: [
-                          MaterialButton(
-                            child: Text(
-                              S.of(context).always_accept,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                    showPlatformAlertDialog(
+                      title: S.of(context).new_connection,
+                      subtitle: S.of(context).new_connection_communication('connection'),
+                      isDismissable: true,
+                      actions: [
+                        MaterialButton(
+                          child: Text(
+                            S.of(context).always_accept,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
                             ),
-                            onPressed: () {
-                              viewModel.dao.insertConnection(connectionName: hostName);
-                              viewModel.mobileScannerController.dispose();
-                              Navigator.pushNamed(
-                                context,
-                                Routes.loading,
-                                arguments: jsonObject['outOfBandInvitation']['body']['url'],
-                              ).then((value) => viewModel.mobileScannerController = MobileScannerController());
-                            },
                           ),
-                          MaterialButton(
-                            child: Text(
-                              S.of(context).accept_once,
-                            ),
-                            onPressed: () {
-                              viewModel.mobileScannerController.dispose();
-                              Navigator.pushNamed(
-                                context,
-                                Routes.loading,
-                                arguments: jsonObject['outOfBandInvitation']['body']['url'],
-                              ).then((value) => viewModel.mobileScannerController = MobileScannerController());
-                            },
+                          onPressed: () {
+                            //* add to connection list
+                            viewModel.mobileScannerController.dispose();
+                            Navigator.of(context).pop();
+                            Navigator.pushNamed(
+                              context,
+                              Routes.loading,
+                              arguments: jsonObject['outOfBandInvitation']['body']['url'],
+                            ).then((value) => viewModel.mobileScannerController = MobileScannerController());
+                          },
+                        ),
+                        MaterialButton(
+                          child: Text(
+                            S.of(context).accept_once,
                           ),
-                          MaterialButton(
-                            child: Text(
-                              S.of(context).dont_accept,
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
+                          onPressed: () {
+                            viewModel.mobileScannerController.dispose();
+                            Navigator.of(context).pop();
+                            Navigator.pushNamed(
+                              context,
+                              Routes.loading,
+                              arguments: jsonObject['outOfBandInvitation']['body']['url'],
+                            ).then((value) => viewModel.mobileScannerController = MobileScannerController());
+                          },
+                        ),
+                        MaterialButton(
+                          child: Text(
+                            S.of(context).dont_accept,
                           ),
-                        ],
-                      );
-                    }
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
                   }
                 }
               },
