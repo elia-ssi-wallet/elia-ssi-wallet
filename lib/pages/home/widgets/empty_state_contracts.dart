@@ -1,3 +1,4 @@
+
 import 'package:elia_ssi_wallet/base/assets/assets.dart';
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
@@ -8,10 +9,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 class EmptyStateContracts extends StatelessWidget {
   const EmptyStateContracts({
     Key? key,
-    required this.noVcs,
+    required this.noSearch,
   }) : super(key: key);
 
-  final bool noVcs;
+  final bool noSearch;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +43,7 @@ class EmptyStateContracts extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         Text(
-          !noVcs ? S.of(context).no_results_matching_your_criteria : S.of(context).no_contracts_added,
+          noSearch ? S.of(context).no_contracts_added : S.of(context).no_results_matching_your_criteria,
           style: AppStyles.title,
           textAlign: TextAlign.center,
         ),
@@ -50,7 +51,7 @@ class EmptyStateContracts extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 60),
           child: Text(
-            !noVcs ? S.of(context).no_results_matching_your_criteria_extra : S.of(context).no_contracts_added_info,
+            noSearch ? S.of(context).no_contracts_added_info : S.of(context).no_results_matching_your_criteria_extra,
             style: AppStyles.subtitle,
             textAlign: TextAlign.center,
           ),

@@ -1,18 +1,25 @@
 import 'dart:convert';
 
-import 'package:elia_ssi_wallet/base/assets/assets.dart';
-import 'package:elia_ssi_wallet/base/colors/colors.dart';
-import 'package:elia_ssi_wallet/base/helpers/alert_dialog_helper.dart';
-import 'package:elia_ssi_wallet/base/router/routes.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:elia_ssi_wallet/base/get_it.dart';
+import 'package:elia_ssi_wallet/base/navigation_service.dart';
+import 'package:elia_ssi_wallet/base/router/app_router.dart';
 import 'package:elia_ssi_wallet/generated/l10n.dart';
-import 'package:elia_ssi_wallet/pages/qr_code_scanner/qr_code_scanner_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
+
+import 'package:elia_ssi_wallet/base/assets/assets.dart';
+import 'package:elia_ssi_wallet/base/colors/colors.dart';
+import 'package:elia_ssi_wallet/pages/qr_code_scanner/qr_code_scanner_viewmodel.dart';
+
 import 'package:mobile_scanner/mobile_scanner.dart';
 
+@RoutePage()
 class QrCodeScanner extends StatelessWidget {
-  QrCodeScanner({Key? key}) : super(key: key);
+  QrCodeScanner({
+    Key? key,
+  }) : super(key: key);
 
   final QrCodeScannerViewModel viewModel = QrCodeScannerViewModel();
 
@@ -34,53 +41,11 @@ class QrCodeScanner extends StatelessWidget {
                   debugPrint('QrCode found! $code');
                   dynamic jsonObject = jsonDecode(code);
                   if (jsonObject['outOfBandInvitation']['body']['url'] != null) {
-                    showPlatformAlertDialog(
-                      title: S.of(context).new_connection,
-                      subtitle: S.of(context).new_connection_communication('connection'),
-                      isDismissable: true,
-                      actions: [
-                        MaterialButton(
-                          child: Text(
-                            S.of(context).always_accept,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
+                    locator.get<NavigationService>().router.push(
+                          LoadingScreenRoute(
+                            url: jsonObject['outOfBandInvitation']['body']['url'],
                           ),
-                          onPressed: () {
-                            //* add to connection list
-                            viewModel.mobileScannerController.dispose();
-                            Navigator.of(context).pop();
-                            Navigator.pushNamed(
-                              context,
-                              Routes.loading,
-                              arguments: jsonObject['outOfBandInvitation']['body']['url'],
-                            ).then((value) => viewModel.mobileScannerController = MobileScannerController());
-                          },
-                        ),
-                        MaterialButton(
-                          child: Text(
-                            S.of(context).accept_once,
-                          ),
-                          onPressed: () {
-                            viewModel.mobileScannerController.dispose();
-                            Navigator.of(context).pop();
-                            Navigator.pushNamed(
-                              context,
-                              Routes.loading,
-                              arguments: jsonObject['outOfBandInvitation']['body']['url'],
-                            ).then((value) => viewModel.mobileScannerController = MobileScannerController());
-                          },
-                        ),
-                        MaterialButton(
-                          child: Text(
-                            S.of(context).dont_accept,
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    );
+                        );
                   }
                 }
               },
@@ -95,7 +60,7 @@ class QrCodeScanner extends StatelessWidget {
                   type: MaterialType.transparency,
                   child: InkWell(
                     onTap: () {
-                      Navigator.pop(context);
+                      context.popRoute();
                       viewModel.mobileScannerController.dispose();
                     },
                     borderRadius: BorderRadius.circular(100),
@@ -106,6 +71,24 @@ class QrCodeScanner extends StatelessWidget {
               ),
             ),
           ),
+          //debug
+          // if (kDebugMode)
+          //   Center(
+          //     child: CupertinoButton.filled(
+          //       child: const Text("do test call"),
+          //       onPressed: () {
+          //         String url = "https://vc-api-dev.energyweb.org/v1/vc-api/exchanges/test_P_1";
+          //         // Navigator.pushNamed(
+          //         //   context,
+          //         //   Routes.loading,
+          //         //   arguments: url, //jsonObject['outOfBandInvitation']['body']['url'],
+          //         // );
+          //         // context.pushRoute(LoadingRoute(url: url));
+          //         context.router.push(LoadingScreenRoute(url: url)).then((value) => viewModel.mobileScannerController = MobileScannerController());
+          //       },
+          //     ),
+          //   ),
+
           Padding(
             padding: const EdgeInsets.only(left: 16.0, top: 80),
             child: Text(

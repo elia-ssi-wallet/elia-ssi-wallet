@@ -9,6 +9,13 @@ extension StringExtension on String {
   }
 
   String getBaseUrlfromExchangeUrl() {
-    return replaceRange(indexOf('/exchanges'), null, '');
+    return replaceRange(indexOf('/v1/vc-api/exchanges'), null, '');
+  }
+
+  String getExchangeIdFromExchangeUrl() {
+    Uri url = Uri.parse(this);
+    List<String> pathSegments = url.pathSegments;
+    String resourceName = pathSegments[pathSegments.indexOf("exchanges") + 1];
+    return resourceName;
   }
 }

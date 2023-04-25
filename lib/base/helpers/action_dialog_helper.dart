@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 Future showPlatformActionDialog({required String title, required List<Widget> actions, required List<Function()> functions}) async {
   if (Platform.isIOS || Platform.isMacOS) {
     await showCupertinoModalPopup(
-        context: locator.get<NavigationService>().navigatorKey.currentContext!,
+        context: locator.get<NavigationService>().router.navigatorKey.currentContext!,
         builder: (context) => PlatformActionDialog(
               title: title,
               actions: actions,
@@ -17,7 +17,7 @@ Future showPlatformActionDialog({required String title, required List<Widget> ac
             ));
   } else {
     await showModalBottomSheet(
-        context: locator.get<NavigationService>().navigatorKey.currentContext!,
+        context: locator.get<NavigationService>().router.navigatorKey.currentContext!,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
         ),

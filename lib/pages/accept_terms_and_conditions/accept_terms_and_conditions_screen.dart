@@ -1,6 +1,6 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
 import 'package:elia_ssi_wallet/base/platform_widgets/platform_widgets.dart';
-import 'package:elia_ssi_wallet/base/router/routes.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
 import 'package:elia_ssi_wallet/generated/l10n.dart';
 import 'package:elia_ssi_wallet/networking/do_call.dart';
@@ -12,10 +12,12 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:styled_text/styled_text.dart';
 
+@RoutePage()
 class AcceptTermsAndConditions extends StatelessWidget {
-  AcceptTermsAndConditions({super.key});
+  AcceptTermsAndConditions({Key? key, required this.onSuccess}) : super(key: key);
 
   final AcceptTermsAndConditionsViewModel viewModel = AcceptTermsAndConditionsViewModel();
+  final Function(bool success) onSuccess;
 
   @override
   Widget build(BuildContext context) {
@@ -58,11 +60,15 @@ class AcceptTermsAndConditions extends StatelessWidget {
                       title: StyledText(
                         text: S.of(context).read_and_accept_tos,
                         style: AppStyles.label,
+                        textHeightBehavior: const TextHeightBehavior(),
                         tags: {
-                          "link": StyledTextActionTag((text, attributes) {
-                            //todo: go to TOS
-                            showAlertDialog(title: S.of(context).app_name, message: "todo: go to Terms of Conditions");
-                          }, style: AppStyles.label.copyWith(fontWeight: FontWeight.bold, decoration: TextDecoration.underline))
+                          "link": StyledTextActionTag(
+                            (text, attributes) {
+                              //todo: go to TOS
+                              showAlertDialog(title: S.of(context).app_name, message: "todo: go to Terms of Conditions");
+                            },
+                            style: AppStyles.label.copyWith(fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
+                          )
                         },
                       ),
                       onChanged: (val) {
@@ -86,8 +92,7 @@ class AcceptTermsAndConditions extends StatelessWidget {
                               : () async {
                                   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
                                   sharedPreferences.setBool("tos_accepted", true);
-
-                                  Navigator.of(context).pushNamedAndRemoveUntil(Routes.home, (route) => false);
+                                  onSuccess(true);
                                 },
                           color: AppColors.dark,
                           disabledColor: AppColors.dark.withOpacity(0.4),

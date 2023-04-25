@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:elia_ssi_wallet/base/helpers/alert_dialog_helper.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
 import 'package:elia_ssi_wallet/generated/l10n.dart';
@@ -8,7 +9,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 class DidTokenScreen extends StatelessWidget {
-  DidTokenScreen({super.key});
+  DidTokenScreen({
+    Key? key,
+  }) : super(key: key);
 
   final DidTokenViewModel viewModel = DidTokenViewModel();
 
@@ -73,14 +76,14 @@ class DidTokenScreen extends StatelessWidget {
                             actions: [
                               MaterialButton(
                                 onPressed: () {
-                                  Navigator.of(context).pop();
+                                  context.popRoute();
                                 },
                                 child: Text(S.of(context).cancel),
                               ),
                               MaterialButton(
                                 onPressed: () {
                                   viewModel.obscure = !viewModel.obscure;
-                                  Navigator.of(context).pop();
+                                  context.popRoute();
                                 },
                                 child: Text(S.of(context).show),
                               ),
@@ -92,54 +95,10 @@ class DidTokenScreen extends StatelessWidget {
                       },
                       subtitle: S.of(context).did_private_key_info,
                     ),
-                    // -----------------
-
-                    // CupertinoButton(
-                    //     child: const Text("create key"),
-                    //     onPressed: () async {
-                    //       await DIDRepository.createDID(onSuccess: (v) async {
-                    //         await DIDRepository.exportKey(
-                    //             didToken: v,
-                    //             onSuccess: (_, __) {
-                    //               print("exported");
-                    //             });
-                    //       });
-                    //     }),
-                    // CupertinoButton(
-                    //     child: const Text("import key"),
-                    //     onPressed: () async {
-                    //       await DIDRepository.importKey(onSuccess: (val) async {
-                    //         await DIDRepository.registerDID(keyId: val, onSuccess: (_) {});
-                    //       });
-                    //     }),
                     // Center(
                     //   child: TextButton(
-                    //     onPressed: () => ExchangeRepository.dao.insertTestVC(),
-                    //     child: const Text('Insert Test VC'),
-                    //   ),
-                    // ),
-                    // Center(
-                    //   child: TextButton(
-                    //     onPressed: () => ExchangeRepository.dao.deleteVCs(),
-                    //     child: const Text('Delete all vcs'),
-                    //   ),
-                    // ),
-                    // Center(
-                    //   child: TextButton(
-                    //     onPressed: () => Navigator.of(context).pushNamed(Routes.dbViewer),
-                    //     child: const Text('Database Viewer'),
-                    //   ),
-                    // ),
-                    // Center(
-                    //   child: TextButton(
-                    //     onPressed: () => ExchangeRepository.pendingRequestDao.insertTestPendingRequests(),
-                    //     child: const Text('Insert Test Pending Request'),
-                    //   ),
-                    // ),
-                    // Center(
-                    //   child: TextButton(
-                    //     onPressed: () => ExchangeRepository.pendingRequestDao.deletePendingRequests(),
-                    //     child: const Text('Delete all pending requests'),
+                    //     onPressed: () => context.router.pushWidget(DriftDbViewer(database)),
+                    //     child: const Text('Open Database'),
                     //   ),
                     // ),
                   ],

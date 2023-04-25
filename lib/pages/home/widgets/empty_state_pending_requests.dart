@@ -43,15 +43,6 @@ class EmptyStatePendingRequests extends StatelessWidget {
           style: AppStyles.title,
           textAlign: TextAlign.center,
         ),
-        // const SizedBox(height: 5),
-        // Padding(
-        //   padding: const EdgeInsets.symmetric(horizontal: 60),
-        //   child: Text(
-        //     !noVcs ? S.of(context).no_results_matching_your_criteria_extra : S.of(context).no_contracts_added_info,
-        //     style: AppStyles.subtitle,
-        //     textAlign: TextAlign.center,
-        //   ),
-        // ),
       ],
     );
   }

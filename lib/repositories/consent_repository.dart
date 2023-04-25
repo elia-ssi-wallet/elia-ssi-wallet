@@ -3,24 +3,7 @@ import 'package:elia_ssi_wallet/networking/do_call.dart';
 import 'package:elia_ssi_wallet/networking/unprotected_rest_client.dart';
 
 class ConsentRepository {
-  Future<void> initiateIssuance({
-    required String endpoint,
-    required Function(dynamic object) onSuccess,
-    required Function(dynamic error) onError,
-  }) async {
-    await doCall<dynamic>(
-      ApiManagerService(UnProtectedRestClient().dio).initiateConsentIssuance(endpoint: endpoint),
-      succesFunction: (object) async {
-        await onSuccess(object);
-      },
-      errorFunction: (error) async {
-        await onError(error);
-      },
-      showDialogs: false,
-    );
-  }
-
-  Future<void> convertInputToCredential({
+  static Future<void> convertInputToCredential({
     required dynamic inputDescriptor,
     required Function(dynamic object) onSuccess,
     required Function(dynamic error) onError,
@@ -40,7 +23,7 @@ class ConsentRepository {
     );
   }
 
-  Future<void> issueSelfSignedCredential({
+  static Future<void> issueSelfSignedCredential({
     // required String baseUrl,
     required dynamic credential,
     required Function(dynamic object) onSuccess,
@@ -49,46 +32,6 @@ class ConsentRepository {
     String baseUrl = 'https://vc-api-dev.energyweb.org';
     await doCall<dynamic>(
       ApiManagerService(UnProtectedRestClient().dio).issueSelfSignedContract(baseUrl: baseUrl, credential: credential),
-      succesFunction: (object) async {
-        await onSuccess(object);
-      },
-      errorFunction: (error) async {
-        await onError(error);
-      },
-      showDialogs: false,
-    );
-  }
-
-  Future<void> createPresentation({
-    // required String baseUrl,
-    required dynamic presentation,
-    required Function(dynamic object) onSuccess,
-    required Function(dynamic error) onError,
-  }) async {
-    String baseUrl = 'https://vc-api-dev.energyweb.org';
-    await doCall<dynamic>(
-      ApiManagerService(UnProtectedRestClient().dio).createPresentationWithSelfSignedCredential(baseUrl: baseUrl, presentation: presentation),
-      succesFunction: (object) async {
-        await onSuccess(object);
-      },
-      errorFunction: (error) async {
-        await onError(error);
-      },
-      showDialogs: false,
-    );
-  }
-
-  Future<void> submitExchange({
-    required String endpoint,
-    required dynamic presentationWithCredential,
-    required Function(dynamic object) onSuccess,
-    required Function(dynamic error) onError,
-  }) async {
-    await doCall<dynamic>(
-      ApiManagerService(UnProtectedRestClient().dio).continueExchangeBySubmitting(
-        endpoint: endpoint,
-        presentationWithCredential: presentationWithCredential,
-      ),
       succesFunction: (object) async {
         await onSuccess(object);
       },

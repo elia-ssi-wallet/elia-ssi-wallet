@@ -5,8 +5,6 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import 'package:elia_ssi_wallet/base/base_utils.dart';
-import 'package:elia_ssi_wallet/base/get_it.dart';
-import 'package:elia_ssi_wallet/base/navigation_service.dart';
 import 'package:elia_ssi_wallet/flavors.dart';
 import 'package:elia_ssi_wallet/generated/l10n.dart';
 
@@ -34,7 +32,7 @@ class _AppState extends State<App> {
   final materialTheme = ThemeData(
     fontFamily: "Sf Pro Display",
     visualDensity: VisualDensity.adaptivePlatformDensity,
-    backgroundColor: Colors.white,
+    // backgroundColor: Colors.white,
     appBarTheme: const AppBarTheme(
         // backgroundColor: AppColors.blue,
         ),
@@ -68,7 +66,8 @@ class _AppState extends State<App> {
             cupertinoTheme: cupertinoTheme,
             supportedLocales: S.delegate.supportedLocales,
             initialRoute: widget.initialRoute,
-            globalNavKey: locator.get<NavigationService>().navigatorKey,
+            // initialRoute: widget.initialRoute,
+            // globalNavKey: locator.get<NavigationService>().navigatorKey,
           ),
         ),
       );

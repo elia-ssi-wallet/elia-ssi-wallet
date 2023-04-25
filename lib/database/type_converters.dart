@@ -29,8 +29,6 @@ class ActivityListConverter extends TypeConverter<List<Activity>, String> {
 
     activityList = List<Activity>.from(list.map((model) => Activity.fromJson(model)));
     return activityList;
-    // var e = jsonDecode(fromDb);
-    // return Activity(id: e["id"], isMainGoal: e['main_goal']);
   }
 
   @override

@@ -26,10 +26,10 @@
     "accept_terms_and_conditions": "Accept terms and conditions",
     "accept_terms_and_conditions_extra": "You need to accept the terms of conditons before adding a device",
     "read_and_accept_tos" : "I've read and accept the\n<link>Terms of Conditions</link>",
-    "did_info": "DID is the lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
-    "did_controller_key_info": "DID Controller Key is the lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
-    "signature_algorithm_info": "Signature Algorithm is the lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
-    "did_private_key_info": "DID private key is the lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+    "did_info": "Refers to any subject, a person (you), an organization or a thing (a car)",
+    "did_controller_key_info": "External DID that have control over this DID (a human DID having control over the thing DID)",
+    "signature_algorithm_info": "Algorithm to be used for decoding a multibase-encoded multicodec value into a verification method.",
+    "did_private_key_info": "Use to sign new claims or prove your identity (keep it secret)",
     "add_contract": "Add contract",
     "hello_name": "Hi {name}!",
     "new_contract_was_added_to_your_wallet": "A new contract was added to your wallet",
@@ -73,5 +73,6 @@
     "declined": "Declined",
     "we_are_processing_your_request": "We're processing your request",
     "we_are_processing_your_request_extra": "Some requests take longer to be approved. You can find this request under the tab “pending”",
-    "view_pending_requests": "View pending requests"
+    "view_pending_requests": "View pending requests",
+    "show_less": "Show less"
 }

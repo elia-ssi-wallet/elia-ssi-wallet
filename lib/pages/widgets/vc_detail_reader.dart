@@ -2,11 +2,19 @@ import 'package:elia_ssi_wallet/base/base_utils.dart';
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class VcDetailReader extends StatelessWidget {
-  const VcDetailReader({required this.vc, super.key});
+  const VcDetailReader({
+    Key? key,
+    required this.vc,
+    required this.issuer,
+    required this.issuanceDate,
+  }) : super(key: key);
 
   final dynamic vc;
+  final String issuer;
+  final DateTime issuanceDate;
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +28,55 @@ class VcDetailReader extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 48.0),
+                  child: Text(
+                    'Issuer',
+                    softWrap: false,
+                    style: AppStyles.smallText,
+                  ),
+                ),
+                Flexible(
+                  child: Text(
+                    issuer,
+                    softWrap: true,
+                    textAlign: TextAlign.right,
+                    style: AppStyles.mediumText,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 48.0),
+                  child: Text(
+                    'Issuance Date',
+                    softWrap: false,
+                    style: AppStyles.smallText,
+                  ),
+                ),
+                Flexible(
+                  child: Text(
+                    DateFormat('EEE d/M/y - H:m').format(issuanceDate),
+                    softWrap: true,
+                    textAlign: TextAlign.right,
+                    style: AppStyles.mediumText,
+                  ),
+                ),
+              ],
+            ),
+            Container(
+              height: 1,
+              color: AppColors.grey2,
+              margin: const EdgeInsets.only(top: 16, bottom: 16),
+            ),
             if (vc != null)
               ...(vc["credentialSubject"] as Map<String, dynamic>).entries.mapIndexed(
                 (entry, index) {
@@ -40,7 +97,12 @@ class VcDetailReader extends StatelessWidget {
                                     children: [
                                       ...(entry.value as List<dynamic>)
                                           .map(
-                                            (e) => Text(e.toString(), softWrap: true, textAlign: TextAlign.right, style: AppStyles.mediumText),
+                                            (e) => Text(
+                                              e.toString(),
+                                              softWrap: true,
+                                              textAlign: TextAlign.right,
+                                              style: AppStyles.mediumText,
+                                            ),
                                           )
                                           .toList()
                                     ],

@@ -4,6 +4,6 @@ import 'navigation_service.dart';
 
 final locator = GetIt.I;
 
-registerSingletons() {
+registerSingletons() async {
   locator.registerLazySingleton(() => NavigationService());
 }

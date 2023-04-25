@@ -69,6 +69,16 @@ extension ListExtensions<T> on List<T> {
   }
 }
 
+extension StringListToCsvStyle on List<String> {
+  String stringListToCsvStyle() {
+    String newString = '';
+    for (var i = 0; i < length; i++) {
+      i != length - 1 ? newString += '${this[i]}, ' : newString += this[i];
+    }
+    return newString;
+  }
+}
+
 /// Dutch messages
 class DutchMessages implements LookupMessages {
   @override

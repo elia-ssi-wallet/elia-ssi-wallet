@@ -5,6 +5,8 @@ class VCs extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get label => text()();
   TextColumn get vc => text()();
+  TextColumn get issuer => text()();
+  DateTimeColumn get issuanceDate => dateTime()();
   TextColumn get types => text().map(StringListConverter())();
   TextColumn get activity => text().map(ActivityListConverter()).withDefault(const Constant("[]"))();
 }

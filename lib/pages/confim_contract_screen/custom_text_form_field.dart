@@ -3,7 +3,7 @@ import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
 class CustomTextFormField extends StatelessWidget {
-  CustomTextFormField({super.key, required this.controller});
+  CustomTextFormField({Key? key, required this.controller}) : super(key: key);
 
   final TextEditingController controller;
 

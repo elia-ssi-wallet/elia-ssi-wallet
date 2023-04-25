@@ -1,4 +1,6 @@
-import 'package:elia_ssi_wallet/base/router/router.dart';
+import 'package:elia_ssi_wallet/base/get_it.dart';
+import 'package:elia_ssi_wallet/base/navigation_service.dart';
+import 'package:elia_ssi_wallet/base/router/route_observer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -32,10 +34,9 @@ class PlatformApp extends PlatformWidget<CupertinoApp, MaterialApp> {
   });
 
   @override
-  CupertinoApp createCupertinoWidget(BuildContext context) => CupertinoApp(
+  CupertinoApp createCupertinoWidget(BuildContext context) => CupertinoApp.router(
         title: title,
         theme: cupertinoTheme,
-        navigatorKey: globalNavKey,
         debugShowCheckedModeBanner: showDebugBanner,
         localizationsDelegates: const [
           S.delegate,
@@ -44,15 +45,36 @@ class PlatformApp extends PlatformWidget<CupertinoApp, MaterialApp> {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: supportedLocales,
-        initialRoute: initialRoute,
-        onGenerateRoute: MyRouter.onGenerateRoute,
+        routerConfig: locator.get<NavigationService>().router.config(
+              initialDeepLink: initialRoute,
+              navigatorObservers: () => [
+                MyObserver(),
+              ],
+            ),
+        // routeInformationParser: AutoRouteInformation(location: location),
+        // routerDelegate: locator.get<NavigationService>().router.delegate(),
+        // routeInformationParser: MyRouteInformationParser(),
+        // routeInformationParser: MyRouteInformationParser(),
+        // routeInformationProvider: AutoRouteInformationProvider(),
+        // routerDelegate: locator.get<NavigationService>().router.delegate(),
+        // routeInformationParser: MyAppRouteInformationParser(),
+        // routeInformationParser: MyAppRouteInformationParser(),
+        // routerDelegate: AutoRouterDelegate(
+        //   _appRouter,
+        //   initialRoutes: [
+        //     QrCodeScannerRoute(text: 'testing'),
+        //   ],
+        //   navigatorObservers: () => [
+        //     AutoRouteObserver(),
+        //   ],
+        // ),
+        // routeInformationParser: MyAppRouteInformationParser(),
       );
 
   @override
-  MaterialApp createMaterialWidget(BuildContext context) => MaterialApp(
+  MaterialApp createMaterialWidget(BuildContext context) => MaterialApp.router(
         title: title,
         theme: materialTheme,
-        navigatorKey: globalNavKey,
         debugShowCheckedModeBanner: showDebugBanner,
         localizationsDelegates: const [
           S.delegate,
@@ -64,7 +86,11 @@ class PlatformApp extends PlatformWidget<CupertinoApp, MaterialApp> {
         locale: locale,
         builder: builder,
         supportedLocales: supportedLocales,
-        initialRoute: initialRoute,
-        onGenerateRoute: MyRouter.onGenerateRoute,
+        routerConfig: locator.get<NavigationService>().router.config(
+              initialDeepLink: initialRoute,
+              navigatorObservers: () => [
+                MyObserver(),
+              ],
+            ),
       );
 }

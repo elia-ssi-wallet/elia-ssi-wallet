@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:elia_ssi_wallet/base/get_it.dart';
 import 'package:elia_ssi_wallet/base/navigation_service.dart';
 import 'package:elia_ssi_wallet/generated/l10n.dart';
@@ -11,7 +12,7 @@ Future<DateTime?> showPlatformDatePicker(DateTime? selectedDate) async {
 
   if (Platform.isIOS || Platform.isMacOS) {
     return await showCupertinoModalPopup<DateTime?>(
-        context: locator.get<NavigationService>().navigatorKey.currentContext!,
+        context: locator.get<NavigationService>().router.navigatorKey.currentContext!,
         builder: (context) => Container(
               height: MediaQuery.of(context).size.height * 0.3,
               color: Colors.white,
@@ -24,12 +25,12 @@ Future<DateTime?> showPlatformDatePicker(DateTime? selectedDate) async {
                       CupertinoButton(
                           child: Text(S.of(context).cancel),
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            context.popRoute();
                           }),
                       CupertinoButton(
                           child: Text(S.of(context).save),
                           onPressed: () {
-                            Navigator.of(context).pop(newDate);
+                            context.popRoute(newDate);
                           }),
                     ],
                   ),
@@ -45,7 +46,7 @@ Future<DateTime?> showPlatformDatePicker(DateTime? selectedDate) async {
             ));
   } else {
     return await showDatePicker(
-      context: locator.get<NavigationService>().navigatorKey.currentContext!,
+      context: locator.get<NavigationService>().router.navigatorKey.currentContext!,
       firstDate: DateTime(1900, 1, 1, 00, 00),
       initialDate: selectedDate ?? DateTime.now(),
       lastDate: DateTime.now().add(

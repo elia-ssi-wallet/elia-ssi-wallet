@@ -131,9 +131,9 @@ void main() {
       'Submit Did Authentication Proof',
       () async {
         try {
-          dynamic result = await client.continueExchangeBySubmitting(
-            endpoint: serviceEndpoint,
-            presentationWithCredential: presentationWithCredential,
+          dynamic result = await client.submitProof(
+            serviceEndpoint: serviceEndpoint,
+            vpRequest: presentationWithCredential,
           );
 
           expect(result['errors'].runtimeType, List);
@@ -157,9 +157,9 @@ void main() {
       'Finish exchange',
       () async {
         try {
-          dynamic result = await client.continueExchangeBySubmitting(
-            endpoint: serviceEndpoint,
-            presentationWithCredential: presentationWithCredential,
+          dynamic result = await client.submitProof(
+            serviceEndpoint: serviceEndpoint,
+            vpRequest: presentationWithCredential,
           );
 
           expect(result['errors'].runtimeType, List);

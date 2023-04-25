@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:elia_ssi_wallet/base/get_it.dart';
 import 'package:elia_ssi_wallet/base/navigation_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import '../../generated/l10n.dart';
 
 Future<T?> showPlatformPicker<T>({required List<T?> items, int? index}) async {
@@ -11,7 +13,7 @@ Future<T?> showPlatformPicker<T>({required List<T?> items, int? index}) async {
 
   if (Platform.isIOS || Platform.isMacOS) {
     return await showCupertinoModalPopup<T?>(
-        context: locator.get<NavigationService>().navigatorKey.currentContext!,
+        context: locator.get<NavigationService>().router.navigatorKey.currentContext!,
         builder: (context) => Container(
               height: MediaQuery.of(context).size.height * 0.3,
               color: Colors.white,
@@ -24,12 +26,12 @@ Future<T?> showPlatformPicker<T>({required List<T?> items, int? index}) async {
                       CupertinoButton(
                           child: Text(S.of(context).cancel),
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            context.popRoute();
                           }),
                       CupertinoButton(
                           child: Text(S.of(context).save),
                           onPressed: () {
-                            Navigator.of(context).pop(newValue);
+                            context.popRoute(newValue);
                           }),
                     ],
                   ),

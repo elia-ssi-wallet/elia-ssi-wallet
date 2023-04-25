@@ -1,13 +1,15 @@
 import 'dart:convert';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:elia_ssi_wallet/base/assets/assets.dart';
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
 import 'package:elia_ssi_wallet/base/helpers/alert_dialog_helper.dart';
-import 'package:elia_ssi_wallet/base/router/routes.dart';
+import 'package:elia_ssi_wallet/base/router/app_router.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
 import 'package:elia_ssi_wallet/database/database.dart';
 import 'package:elia_ssi_wallet/generated/l10n.dart';
 import 'package:elia_ssi_wallet/pages/home/widgets/activity_item.dart';
+import 'package:elia_ssi_wallet/pages/home/widgets/vc_detail_screen_viewmodel.dart';
 import 'package:elia_ssi_wallet/pages/widgets/vc_detail_reader.dart';
 import 'package:elia_ssi_wallet/repositories/exchange_repository.dart';
 import 'package:flutter/material.dart';
@@ -15,10 +17,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 
+@RoutePage()
 class VCDetailScreen extends StatelessWidget {
-  const VCDetailScreen({required this.vc, super.key});
+  VCDetailScreen({required this.vc, Key? key}) : super(key: key);
 
   final VC vc;
+
+  final VCDetailScreenViewmodel viewModel = VCDetailScreenViewmodel();
 
   @override
   Widget build(BuildContext context) {
@@ -41,14 +46,14 @@ class VCDetailScreen extends StatelessWidget {
                   actions: [
                     MaterialButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        context.popRoute();
                       },
                       child: Text(S.of(context).cancel),
                     ),
                     MaterialButton(
                       onPressed: () {
                         ExchangeRepository.dao.deleteVC(vcId: vc.id);
-                        Navigator.of(context).popUntil((route) => route.settings.name == Routes.home);
+                        context.router.popUntilRouteWithName(HomeScreenRoute.name);
                       },
                       child: Text(
                         S.of(context).delete,
@@ -85,122 +90,175 @@ class VCDetailScreen extends StatelessWidget {
           systemOverlayStyle: SystemUiOverlayStyle.dark,
           elevation: 0.5,
         ),
-        body: Observer(builder: (context) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Center(
-                    child: SizedBox(
-                      width: 140,
-                      height: 76,
-                      child: Stack(
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Container(
-                              height: 76,
-                              width: 76,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColors.dark,
-                              ),
-                              child: Center(
-                                child: SvgPicture.asset(
-                                  AppAssets.documentIcon,
+        body: Observer(
+          builder: (context) {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Center(
+                      child: SizedBox(
+                        width: 140,
+                        height: 76,
+                        child: Stack(
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                height: 76,
+                                width: 76,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppColors.dark,
+                                ),
+                                child: Center(
+                                  child: SvgPicture.asset(
+                                    AppAssets.documentIcon,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: Container(
-                              height: 76,
-                              width: 76,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColors.dark,
-                                border: Border.all(color: Colors.white),
-                              ),
-                              child: Center(
-                                child: SvgPicture.asset(
-                                  AppAssets.electricWalletIcon,
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Container(
+                                height: 76,
+                                width: 76,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppColors.dark,
+                                  border: Border.all(color: Colors.white),
+                                ),
+                                child: Center(
+                                  child: SvgPicture.asset(
+                                    AppAssets.electricWalletIcon,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          Center(
-                            child: SizedBox(
-                              height: 27.3,
-                              width: 27.63,
-                              child: SvgPicture.asset(AppAssets.linkIcon),
+                            Center(
+                              child: SizedBox(
+                                height: 27.3,
+                                width: 27.63,
+                                child: SvgPicture.asset(AppAssets.linkIcon),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 33,
-                  ),
-                  Text(
-                    S.of(context).contract_info,
-                    style: AppStyles.title,
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  VcDetailReader(vc: jsonDecode(vc.vc)[0]),
-                  const SizedBox(
-                    height: 25,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        S.of(context).activity_log,
-                        style: AppStyles.title,
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        style: ButtonStyle(
-                          overlayColor: MaterialStateProperty.all(
-                            Colors.grey.shade300,
+                    const SizedBox(
+                      height: 33,
+                    ),
+                    Text(
+                      S.of(context).contract_info,
+                      style: AppStyles.title,
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    VcDetailReader(
+                      vc: jsonDecode(vc.vc),
+                      issuer: vc.issuer,
+                      issuanceDate: vc.issuanceDate,
+                    ),
+                    const SizedBox(
+                      height: 25,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 14.0),
+                          child: Text(
+                            S.of(context).activity_log,
+                            style: AppStyles.title,
                           ),
                         ),
-                        child: Text(
-                          S.of(context).show_all,
-                          style: AppStyles.subtitle,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      ...vc.activity.map(
-                        (e) => Padding(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: ActivityItem(
-                            activity: e,
+                        if (vc.activity.length > 3)
+                          TextButton(
+                            onPressed: () {
+                              viewModel.showAll = !viewModel.showAll;
+                            },
+                            style: ButtonStyle(
+                              overlayColor: MaterialStateProperty.all(
+                                Colors.grey.shade300,
+                              ),
+                            ),
+                            child: Text(
+                              viewModel.showAll ? S.of(context).show_less : S.of(context).show_all,
+                              style: AppStyles.subtitle,
+                            ),
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 100,
-                  ),
-                ],
+                      ],
+                    ),
+                    Observer(
+                      builder: (_) => viewModel.showAll || vc.activity.length < 3
+                          ? vc.activity.isNotEmpty
+                              ? Column(
+                                  children: [
+                                    ...vc.activity.reversed.map(
+                                      (e) => Padding(
+                                        padding: const EdgeInsets.only(bottom: 10.0),
+                                        child: ActivityItem(
+                                          activity: e,
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                )
+                              : const Center(
+                                  child: Text(
+                                    'No activity yet',
+                                    style: AppStyles.subtitle,
+                                  ),
+                                )
+                          : Column(
+                              children: [
+                                ...vc.activity.sublist(0, 3).reversed.map(
+                                      (e) => Padding(
+                                        padding: const EdgeInsets.only(bottom: 10.0),
+                                        child: ActivityItem(
+                                          activity: e,
+                                        ),
+                                      ),
+                                    ),
+                                if (vc.activity.length > 3)
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      for (var i = 0; i < 3; i++) ...[
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                          child: Container(
+                                            height: 5,
+                                            width: 5,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.grey.shade300,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                              ],
+                            ),
+                    ),
+                    SizedBox(
+                      height: 80 + MediaQuery.of(context).padding.bottom,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        }),
+            );
+          },
+        ),
       ),
     );
   }

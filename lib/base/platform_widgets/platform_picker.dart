@@ -1,3 +1,5 @@
+import 'package:auto_route/auto_route.dart';
+
 import '../../generated/l10n.dart';
 
 import 'platform_widget.dart';
@@ -23,12 +25,12 @@ class PlatformPicker<T> extends PlatformWidget<Widget, Widget> {
                 CupertinoButton(
                     child: Text(S.of(context).cancel),
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      context.popRoute();
                     }),
                 CupertinoButton(
                     child: Text(S.of(context).save),
                     onPressed: () {
-                      Navigator.of(context).pop(newValue);
+                      context.popRoute(newValue);
                     }),
               ],
             ),

@@ -1,38 +1,37 @@
-// ignore_for_file: use_build_context_synchronously
+import 'dart:convert';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:elia_ssi_wallet/base/assets/assets.dart';
+import 'package:elia_ssi_wallet/base/base_utils.dart';
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
-import 'package:elia_ssi_wallet/base/router/routes.dart';
+import 'package:elia_ssi_wallet/base/router/app_router.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
 import 'package:elia_ssi_wallet/generated/l10n.dart';
-import 'package:elia_ssi_wallet/models/did/did_token.dart';
 import 'package:elia_ssi_wallet/pages/compatible_contracts_screen/compatible_contract_item.dart';
 import 'package:elia_ssi_wallet/pages/compatible_contracts_screen/compatible_contracts_screen_viewmodel.dart';
 import 'package:elia_ssi_wallet/pages/widgets/circle_painter.dart';
-import 'package:elia_ssi_wallet/repositories/consent_repository.dart';
-import 'package:elia_ssi_wallet/repositories/did_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:logger/logger.dart';
 
+@RoutePage()
 class CompatibleContractsScreen extends StatefulWidget {
   const CompatibleContractsScreen({
     Key? key,
-    required this.type,
-    required this.exchangeId,
+    required this.types,
+    required this.vCsList,
   }) : super(key: key);
 
-  final String type;
-  final String exchangeId;
+  final List<String> types;
+  final List<dynamic> vCsList;
 
   @override
   State<CompatibleContractsScreen> createState() => _CompatibleContractsScreenState();
 }
 
 class _CompatibleContractsScreenState extends State<CompatibleContractsScreen> {
-  late final CompatibleContractsScreenViewModel viewModel = CompatibleContractsScreenViewModel(type: widget.type);
+  late final CompatibleContractsScreenViewModel viewModel = CompatibleContractsScreenViewModel(types: widget.types);
 
   final SliverOverlapAbsorberHandle sliverOverlapAbsorberHandle = SliverOverlapAbsorberHandle();
 
@@ -52,9 +51,7 @@ class _CompatibleContractsScreenState extends State<CompatibleContractsScreen> {
                   heroTag: 'confirmScreen1',
                   backgroundColor: AppColors.dark,
                   onPressed: () {
-                    Navigator.pop(context);
-                    // Navigator.popUntil(context, (route) => route.settings.name == Routes.home);
-                    // ExchangeRepository.pendingRequestDao.deletePendingRequest(vp: vp);
+                    context.router.popUntilRouteWithName(HomeScreenRoute.name);
                   },
                   label: Center(
                     child: Text(
@@ -71,82 +68,13 @@ class _CompatibleContractsScreenState extends State<CompatibleContractsScreen> {
               Expanded(
                 child: FloatingActionButton.extended(
                   heroTag: 'confirmScreen2',
-                  backgroundColor: AppColors.dark,
-                  onPressed: () async {
-                    Navigator.of(context).pushNamed(Routes.acceptTermsAndConditions);
-                    await ConsentRepository().initiateIssuance(
-                      endpoint: 'https://vc-api-dev.energyweb.org/v1/vc-api/exchanges/${widget.exchangeId}',
-                      onError: (e) {
-                        Logger().e(e);
-                      },
-                      onSuccess: (result) async {
-                        await ConsentRepository().convertInputToCredential(
-                          inputDescriptor: {
-                            'constraints': result['vpRequest']['query'][0]['credentialQuery'][0]['presentationDefinition']['input_descriptors'][0]['constraints'],
-                          },
-                          onSuccess: (result2) async {
-                            DIDToken? didToken = await DIDRepository.getDidTokenFromSecureStorage();
-                            if (didToken != null) {
-                              await ConsentRepository().issueSelfSignedCredential(
-                                credential: {
-                                  'credential': {
-                                    'id': result2['credential']['id'],
-                                    '@context': result2['credential']['@context'],
-                                    'credentialSubject': {
-                                      'consent': result2['credential']['credentialSubject']['consent'],
-                                      'id': didToken.id,
-                                    },
-                                    'type': result2['credential']['type'],
-                                    'issuer': didToken.id,
-                                    'issuanceDate': '${DateTime.now().toIso8601String()}Z',
-                                  },
-                                },
-                                onSuccess: (result3) async {
-                                  await ConsentRepository().createPresentation(
-                                    presentation: {
-                                      'presentation': {
-                                        '@context': [
-                                          'https://www.w3.org/2018/credentials/v1',
-                                          'https://www.w3.org/2018/credentials/examples/v1',
-                                        ],
-                                        'type': ['VerifiablePresentation'],
-                                        'verifiableCredential': [result3],
-                                        'holder': didToken.id,
-                                      },
-                                      "options": {
-                                        "verificationMethod": didToken.verificationMethod.first.id,
-                                        "proofPurpose": "authentication",
-                                        "challenge": result['vpRequest']['challenge'],
-                                      },
-                                    },
-                                    onSuccess: (result4) async {
-                                      await ConsentRepository().submitExchange(
-                                        endpoint: result['vpRequest']['interact']['service'][0]['serviceEndpoint'],
-                                        presentationWithCredential: result4,
-                                        onSuccess: (result5) async {},
-                                        onError: (e) {
-                                          Logger().e(e);
-                                        },
-                                      );
-                                    },
-                                    onError: (e) {
-                                      Logger().e(e);
-                                    },
-                                  );
-                                },
-                                onError: (e) {
-                                  Logger().e(e);
-                                },
-                              );
-                            }
-                          },
-                          onError: (e) {
-                            Logger().e(e);
-                          },
-                        );
-                      },
-                    );
-                  },
+                  backgroundColor: viewModel.selectedBoolList.any((element) => element == true) ? AppColors.dark : AppColors.dark.withOpacity(0.4),
+                  onPressed: viewModel.selectedBoolList.any((element) => element == true)
+                      ? () async {
+                          widget.vCsList.addAll(viewModel.vCs.where((vc) => viewModel.selectedBoolList[viewModel.vCs.indexOf(vc)]).map((e) => jsonDecode(e.vc)).toList());
+                          context.router.pop();
+                        }
+                      : null,
                   label: Center(
                     child: Text(
                       S.of(context).next,
@@ -177,19 +105,6 @@ class _CompatibleContractsScreenState extends State<CompatibleContractsScreen> {
                     largeTitle: Text(S.of(context).add_contract),
                     backgroundColor: Colors.white,
                     border: null,
-                    trailing: Material(
-                      type: MaterialType.transparency,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        borderRadius: BorderRadius.circular(100),
-                        child: SvgPicture.asset(
-                          AppAssets.closeIcon,
-                          color: AppColors.grey2,
-                        ),
-                      ),
-                    ),
                   ),
                 ),
                 SliverOverlapInjector(
@@ -230,7 +145,7 @@ class _CompatibleContractsScreenState extends State<CompatibleContractsScreen> {
                                 ),
                                 Flexible(
                                   child: Text(
-                                    S.of(context).requirement(widget.type),
+                                    S.of(context).requirement(widget.types.stringListToCsvStyle()),
                                     softWrap: true,
                                     style: const TextStyle(
                                       fontStyle: FontStyle.italic,
@@ -263,11 +178,17 @@ class _CompatibleContractsScreenState extends State<CompatibleContractsScreen> {
                                       itemBuilder: (context, index) => Padding(
                                         padding: const EdgeInsets.only(bottom: 26.0),
                                         child: CompatibleContractItem(
-                                          selected: viewModel.boolList[index],
-                                          vC: viewModel.vCs[index],
-                                          toggleSelected: () {
+                                          expanded: viewModel.expanedBoolList[index],
+                                          selected: viewModel.selectedBoolList[index],
+                                          vc: viewModel.vCs[index],
+                                          toggleSelected: (newValue) {
                                             setState(() {
-                                              viewModel.boolList[index] = !viewModel.boolList[index];
+                                              viewModel.selectedBoolList[index] = newValue;
+                                            });
+                                          },
+                                          toggleExpanded: (newValue) {
+                                            setState(() {
+                                              viewModel.expanedBoolList[index] = newValue;
                                             });
                                           },
                                         ),
@@ -312,7 +233,7 @@ class _CompatibleContractsScreenState extends State<CompatibleContractsScreen> {
                                       Padding(
                                         padding: const EdgeInsets.symmetric(horizontal: 30),
                                         child: Text(
-                                          S.of(context).you_have_no_contracts(widget.type),
+                                          S.of(context).you_have_no_contracts(widget.types.stringListToCsvStyle()),
                                           style: AppStyles.subtitle,
                                           textAlign: TextAlign.center,
                                         ),

@@ -10,23 +10,23 @@ part 'pending_requests_dao.drift.dart';
 class PendingRequestsDao extends DatabaseAccessor<Database> with _$PendingRequestsDaoMixin {
   PendingRequestsDao(Database attachedDatabase) : super(attachedDatabase);
 
-  Future<int> insertPendingRequests({required String serviceEndpoint, required dynamic vp}) async {
+  Future<int> insertPendingRequests({required String serviceEndpoint, required dynamic requestVp}) async {
     PendingRequestsCompanion newPendingRequest = PendingRequestsCompanion.insert(
       serviceEndpoint: serviceEndpoint,
-      vp: jsonEncode(vp),
+      requestVp: jsonEncode(requestVp),
     );
 
     return await into(pendingRequests).insert(newPendingRequest);
   }
 
-  Future<void> updatePendingRequests({required int id, required dynamic vpVc}) async {
+  Future<void> updatePendingRequests({required int id, required dynamic vp}) async {
     PendingRequest pendingRequest = await getPendingRequestsWithId(id: id);
 
     PendingRequestsCompanion newPendingRequest = PendingRequestsCompanion.insert(
       id: Value(id),
       serviceEndpoint: pendingRequest.serviceEndpoint,
-      vp: pendingRequest.vp,
-      vpVc: Value(jsonEncode(vpVc)),
+      requestVp: pendingRequest.requestVp,
+      vp: Value(jsonEncode(vp)),
     );
 
     await into(pendingRequests).insertOnConflictUpdate(newPendingRequest);
@@ -35,17 +35,17 @@ class PendingRequestsDao extends DatabaseAccessor<Database> with _$PendingReques
   Future<void> insertTestPendingRequests() async {
     PendingRequestsCompanion newPendingRequest = PendingRequestsCompanion.insert(
       serviceEndpoint: testServiceEndpoint,
-      vp: jsonEncode(testvp),
+      requestVp: jsonEncode(testvp),
     );
 
     await into(pendingRequests).insert(newPendingRequest);
   }
 
-  Future<void> updatePendingRequest({required int id, required dynamic vc}) async {
+  Future<void> updatePendingRequest({required int id, required dynamic vp}) async {
     (update(pendingRequests)
       ..where((tbl) => tbl.id.equals(id))
       ..write(
-        PendingRequestsCompanion(vpVc: Value(jsonEncode(vc))),
+        PendingRequestsCompanion(vp: Value(jsonEncode(vp))),
       ));
   }
 
@@ -57,22 +57,25 @@ class PendingRequestsDao extends DatabaseAccessor<Database> with _$PendingReques
       ));
   }
 
-  Future<void> deletePendingRequests() => delete(pendingRequests).go();
-
-  Future<void> deletePendingRequest({required dynamic vp}) => (delete(pendingRequests)..where((tbl) => tbl.vpVc.equals(jsonEncode(vp)))).go();
-
   Future<void> deletePendingRequestWithId({required int id}) => (delete(pendingRequests)..where((tbl) => tbl.id.equals(id))).go();
 
-  Future<List<PendingRequest>> getPendingRequests() => select(pendingRequests).get();
+  Future<List<PendingRequest>> getPendingRequestsNotCompleted() => (select(pendingRequests)..where((tbl) => tbl.vp.isNull())).get();
 
   Stream<List<PendingRequest>> requestsStream() => select(pendingRequests).watch();
 
-  Stream<List<PendingRequest>> pendingRequestsStream() => (select(pendingRequests)..where((tbl) => tbl.vpVc.isNull())).watch();
+  Stream<List<PendingRequest>> pendingRequestsStream() => (select(pendingRequests)..where((tbl) => tbl.vp.isNull())).watch();
 
   Future<PendingRequest> getPendingRequestsWithId({required int id}) => (select(pendingRequests)
         ..where((tbl) => tbl.id.equals(id))
         ..limit(1))
       .getSingle();
+
+  Future<PendingRequest?> getPendingRequestsWithExchangeId({required String exchangeId}) => (select(pendingRequests)
+        ..where((tbl) => tbl.serviceEndpoint.contains(exchangeId))
+        ..limit(1))
+      .getSingleOrNull();
+
+  void deleteAll() => delete(pendingRequests).go();
 }
 
 String testServiceEndpoint = "https://vc-api-dev.energyweb.org/v1/vc-api/exchanges/test";

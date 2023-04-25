@@ -3,16 +3,25 @@ targets:
     auto_apply_builders: true
     builders:
       drift_dev:
+        generate_for:
+          exclude:
+            - /**.gr.dart
         options:
             generate_connect_constructor: true
             apply_converters_on_variables: true
       drift_dev|not_shared:
         enabled: true
+        generate_for:
+          exclude:
+            - /**.gr.dart
         options:
             generate_connect_constructor: true
             apply_converters_on_variables: true
       drift_dev|preparing_builder:
         enabled: true
+        generate_for:
+          exclude:
+            - /**.gr.dart
         options:
             generate_connect_constructor: true
             apply_converters_on_variables: true

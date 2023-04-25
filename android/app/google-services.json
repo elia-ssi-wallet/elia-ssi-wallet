@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "738133899286",
+    "project_id": "elia-ssi-wallet",
+    "storage_bucket": "elia-ssi-wallet.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:738133899286:android:4eee68e65c7631ac855d37",
+        "android_client_info": {
+          "package_name": "com.example.elia_ssi_wallet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "738133899286-tiaptrbls3nm1esvv9gq228kpsip4qu9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMbipNnqC26tfabMASn5o_0kwPTd4uxz8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "738133899286-tiaptrbls3nm1esvv9gq228kpsip4qu9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "738133899286-52ud0dts15a7cq9fd14qjasdrj2pl63i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.elia-ssi-wallet.poc"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

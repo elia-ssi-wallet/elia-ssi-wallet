@@ -22,7 +22,7 @@ class PlatformAlertDialog extends PlatformWidget<CupertinoAlertDialog, AlertDial
               child: action.child!,
               onPressed: () {
                 action.onPressed!();
-                // Navigator.of(context).pop();
+                // context.popRoute();
               })),
         ],
       );

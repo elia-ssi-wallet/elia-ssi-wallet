@@ -12,29 +12,6 @@ class DIDRepository {
   static const DID_TOKEN = "did_token";
   static final client = ApiManagerService(UnProtectedRestClient().dio);
 
-  // static Future<void> createAndRegisterNewDID() async {
-  //   await createDID(
-  //     onSuccess: (keyId) async {
-  //       await exportKey(
-  //         didToken: keyId,
-  //         onSuccess: (publicKey, privateKey) async {
-  //           await importKey(
-  //             onSuccess: (keyId) async {
-  //               await registerDID(
-  //                 keyId: keyId,
-  //                 onSuccess: (key) async {
-  //                   bool exists = await checkIfDIDExists(did: key["id"]);
-  //                   Logger().i("did exists => $exists");
-  //                 },
-  //               );
-  //             },
-  //           );
-  //         },
-  //       );
-  //     },
-  //   );
-  // }
-
   static Future<dynamic> createDID({required Function(dynamic object) onSuccess}) async {
     var body = {"method": "key"};
 
@@ -81,7 +58,7 @@ class DIDRepository {
     if (publicKey != null && privateKey != null) {
       var body = {
         "publicKey": jsonDecode(publicKey),
-        "privateKey": jsonDecode(publicKey),
+        "privateKey": jsonDecode(privateKey),
       };
 
       await doCall<dynamic>(
@@ -141,41 +118,55 @@ class DIDRepository {
     return exists;
   }
 
-  static Future<void> createAndExportDID() async {
+  static Future<bool> createAndExportDID() async {
+    var success = false;
     await createDID(onSuccess: (didToken) async {
       await exportKey(
           didToken: didToken,
           onSuccess: (_, __) {
             Logger().i("KEY EXPORTED");
+            success = true;
           });
     });
+
+    return success;
   }
 
-  static Future<void> importAndRegisterDIDToken() async {
+  static Future<bool> importAndRegisterDIDToken() async {
+    var success = false;
     await importKey(
       onSuccess: (keyId) async {
         await registerDID(
           keyId: keyId,
           onSuccess: (val) {
             Logger().i("KEY REGISTERED");
+            success = true;
           },
         );
       },
     );
+
+    return success;
   }
 
-  static Future<void> initalCheckForDID() async {
-    //todo: return true/false
+  static Future<bool> initalCheckForDID() async {
+    var success = false;
+
     DIDToken? token = await DIDRepository.getDidTokenFromSecureStorage();
     String? publicKey = await SecureStorage.readSecureData(SecureStorage.PUBLIC_KEY);
     String? privateKey = await SecureStorage.readSecureData(SecureStorage.PRIVATE_KEY);
     if (token != null && publicKey != null && privateKey != null) {
       bool onServer = await DIDRepository.checkIfDIDExists(did: token.id);
+      Logger().d(onServer);
       if (!onServer) {
-        await DIDRepository.importAndRegisterDIDToken();
+        success = await DIDRepository.importAndRegisterDIDToken();
+      } else {
+        success = onServer;
       }
     } else {
-      await DIDRepository.createAndExportDID();
+      success = await DIDRepository.createAndExportDID();
     }
+
+    return success;
   }
 }

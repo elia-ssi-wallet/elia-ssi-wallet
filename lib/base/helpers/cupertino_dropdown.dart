@@ -6,6 +6,7 @@
 
 import 'dart:math' as math;
 import 'dart:ui' as ui;
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart' show kMinFlingVelocity, kLongPressTimeout;
 import 'package:flutter/scheduler.dart';
@@ -359,7 +360,7 @@ class _CupertinoDropDownMenuState extends State<CupertinoDropDownMenu> with Tick
         );
       },
     );
-    Overlay.of(context, rootOverlay: true)!.insert(_lastOverlayEntry!);
+    Overlay.of(context, rootOverlay: true).insert(_lastOverlayEntry!);
     _openController.forward();
   }
 
@@ -635,7 +636,7 @@ class _ContextMenuRoute<T> extends PopupRoute<T> {
       parent: animation!,
       curve: const Interval(0.9, 1.0),
     ));
-    Navigator.of(context).pop();
+    context.popRoute();
   }
 
   // Take measurements on the child and _ContextMenuSheet and update the

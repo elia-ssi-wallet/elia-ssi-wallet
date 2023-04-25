@@ -18,5 +18,9 @@ class ConnectionsDao extends DatabaseAccessor<Database> with _$ConnectionsDaoMix
 
   Future<List<Connection>> getConnections() => select(connections).get();
 
+  Future<Connection?> getConnectionWithName({required String name}) => (select(connections)..where((tbl) => tbl.name.equals(name))).getSingleOrNull();
+
   Stream<List<Connection>> connectionsStream() => select(connections).watch();
+
+  void deleteAll() => delete(connections).go();
 }

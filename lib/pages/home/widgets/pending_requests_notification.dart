@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class PendingRequestsNotification extends StatelessWidget {
-  const PendingRequestsNotification({super.key});
+  const PendingRequestsNotification({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

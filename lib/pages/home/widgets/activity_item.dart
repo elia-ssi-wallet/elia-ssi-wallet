@@ -70,7 +70,7 @@ class ActivityItem extends StatelessWidget {
                           style: AppStyles.smallText,
                         ),
                         Text(
-                          'date',
+                          'Date',
                           style: AppStyles.smallText,
                         ),
                       ],
@@ -86,7 +86,7 @@ class ActivityItem extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          DateFormat.yMd().format(activity.date),
+                          DateFormat('d/M/y - H:m').format(activity.date),
                           style: AppStyles.boldText,
                         ),
                       ],

@@ -9,5 +9,12 @@ abstract class _ConfirmContractViewModel with Store {
   _ConfirmContractViewModel();
 
   @observable
-  TextEditingController issuerNameController = TextEditingController();
+  PageController pageController = PageController();
+
+  void nextPage() {
+    pageController.nextPage(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.fastOutSlowIn,
+    );
+  }
 }

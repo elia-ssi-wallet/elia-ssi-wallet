@@ -27,13 +27,13 @@ class PlatformActionDialog extends PlatformWidget<CupertinoActionSheet, Material
                   child: actions[index]!,
                   onPressed: () {
                     functions[index]();
-                    locator.get<NavigationService>().navigatorKey.currentState?.pop();
+                    locator.get<NavigationService>().router.pop();
                   },
                 )),
         cancelButton: CupertinoButton(
             child: Text(S.current.cancel, style: const TextStyle(color: Colors.red)),
             onPressed: () {
-              locator.get<NavigationService>().navigatorKey.currentState?.pop();
+              locator.get<NavigationService>().router.pop();
             }),
       );
 
@@ -73,7 +73,7 @@ class PlatformActionDialog extends PlatformWidget<CupertinoActionSheet, Material
                         title: actions[index]!,
                         onTap: () {
                           functions[index]();
-                          locator.get<NavigationService>().navigatorKey.currentState?.pop();
+                          locator.get<NavigationService>().router.pop();
                         },
                       ),
                       separatorBuilder: (context, index) => const Divider(),

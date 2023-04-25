@@ -163,7 +163,7 @@ void main() {
     'Initiate Consent Issuance',
     () async {
       try {
-        dynamic result = await client.initiateConsentIssuance(endpoint: endpoint);
+        dynamic result = await client.initiateIssuance(exchangeURL: endpoint);
 
         expect(result['vpRequest']['challenge'].runtimeType, String);
         challenge = result['vpRequest']['challenge'];
@@ -233,7 +233,7 @@ void main() {
     'Create a presentation with the self-signed credential',
     () async {
       try {
-        dynamic result = await client.createPresentationWithSelfSignedCredential(baseUrl: baseUrl, presentation: presentation);
+        dynamic result = await client.createPresentation(baseUrl: baseUrl, presentation: presentation);
 
         expect(result["@context"].runtimeType, List);
         expect(result["type"].runtimeType, List);
@@ -250,7 +250,7 @@ void main() {
     'Continue exchange by submitting',
     () async {
       try {
-        dynamic result = await client.continueExchangeBySubmitting(endpoint: continueExchangeEndpoint, presentationWithCredential: presentationWithCredential);
+        dynamic result = await client.submitProof(serviceEndpoint: continueExchangeEndpoint, vpRequest: presentationWithCredential);
 
         expect(result["errors"].runtimeType, List);
         expect((result["errors"] as List).isEmpty, true);

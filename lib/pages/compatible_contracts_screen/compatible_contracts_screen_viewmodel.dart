@@ -6,23 +6,27 @@ part 'compatible_contracts_screen_viewmodel.g.dart';
 
 class CompatibleContractsScreenViewModel extends _CompatibleContractsScreenViewModel with _$CompatibleContractsScreenViewModel {
   CompatibleContractsScreenViewModel({
-    required String type,
-  }) : super(type);
+    required List<String> types,
+  }) : super(types);
 }
 
 abstract class _CompatibleContractsScreenViewModel with Store {
-  _CompatibleContractsScreenViewModel(type) {
-    getVCs(type);
+  _CompatibleContractsScreenViewModel(types) {
+    getVCs(types);
   }
 
   @observable
   ObservableList<VC> vCs = ObservableList();
 
   @observable
-  ObservableList boolList = ObservableList();
+  ObservableList selectedBoolList = ObservableList();
 
-  getVCs(String type) async {
-    vCs = (await ExchangeRepository.dao.searchVcFuture(type)).asObservable();
-    boolList = List.generate(vCs.length, (index) => false).asObservable();
+  @observable
+  ObservableList expanedBoolList = ObservableList();
+
+  getVCs(List<String> types) async {
+    vCs = (await ExchangeRepository.dao.searchVcFuture(types)).asObservable();
+    selectedBoolList = List.generate(vCs.length, (index) => false).asObservable();
+    expanedBoolList = List.generate(vCs.length, (index) => false).asObservable();
   }
 }

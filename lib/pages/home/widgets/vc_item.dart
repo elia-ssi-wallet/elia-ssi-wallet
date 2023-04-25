@@ -4,14 +4,17 @@ import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
 import 'package:elia_ssi_wallet/database/database.dart';
 import 'package:elia_ssi_wallet/pages/home/widgets/vc_detail_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class VcItem extends StatelessWidget {
   const VcItem({
     Key? key,
     required this.vc,
+    this.selfSigned = false,
   }) : super(key: key);
 
   final VC vc;
+  final bool selfSigned;
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +52,23 @@ class VcItem extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Flexible(child: Text(vc.type(), style: AppStyles.subtitle)),
-                    Flexible(child: Text(vc.label, style: AppStyles.title)),
+                    Flexible(
+                      child: Text(
+                        vc.type(),
+                        style: AppStyles.subtitle,
+                      ),
+                    ),
+                    Flexible(
+                      child: selfSigned
+                          ? Text(
+                              DateFormat('d/M/y - H:m').format(vc.issuanceDate),
+                              style: AppStyles.title,
+                            )
+                          : Text(
+                              vc.label,
+                              style: AppStyles.title,
+                            ),
+                    ),
                   ],
                 ),
                 const Spacer(),

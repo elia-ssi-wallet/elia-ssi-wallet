@@ -4,9 +4,9 @@ import 'package:elia_ssi_wallet/base/base_utils.dart';
 import 'package:elia_ssi_wallet/base/get_it.dart';
 import 'package:elia_ssi_wallet/base/navigation_service.dart';
 import 'package:elia_ssi_wallet/generated/l10n.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 
 Future<T?> doCall<T>(
   Future<dynamic> networkCall, {
@@ -52,8 +52,8 @@ Future<T?> doCall<T>(
 }
 
 void showSnackBar({required String? message}) {
-  ScaffoldMessenger.of(locator.get<NavigationService>().navigatorKey.currentContext!).clearSnackBars();
-  ScaffoldMessenger.of(locator.get<NavigationService>().navigatorKey.currentContext!).showSnackBar(SnackBar(content: Text(message ?? "")));
+  ScaffoldMessenger.of(locator.get<NavigationService>().router.navigatorKey.currentContext!).clearSnackBars();
+  ScaffoldMessenger.of(locator.get<NavigationService>().router.navigatorKey.currentContext!).showSnackBar(SnackBar(content: Text(message ?? "")));
 }
 
 Future<dynamic> showAlertDialog({required String? title, required String? message, Function()? onPressed}) {
@@ -61,7 +61,7 @@ Future<dynamic> showAlertDialog({required String? title, required String? messag
   if (!isVisible) {
     isVisible = true;
     return showDialog(
-      context: locator.get<NavigationService>().navigatorKey.currentContext!,
+      context: locator.get<NavigationService>().router.navigatorKey.currentContext!,
       builder: (_) => CupertinoAlertDialog(
         title: Text(title ?? ""),
         content: Text(message ?? ""),
@@ -70,7 +70,7 @@ Future<dynamic> showAlertDialog({required String? title, required String? messag
               onPressed: onPressed ??
                   () {
                     isVisible = false;
-                    locator.get<NavigationService>().navigatorKey.currentState?.pop();
+                    locator.get<NavigationService>().router.navigatorKey.currentState?.pop();
                   },
               child: const Text("OK"))
         ],

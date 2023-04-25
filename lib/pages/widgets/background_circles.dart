@@ -2,7 +2,7 @@ import 'package:elia_ssi_wallet/pages/widgets/circle_painter.dart';
 import 'package:flutter/material.dart';
 
 class BackGroundCircles extends StatelessWidget {
-  const BackGroundCircles({super.key});
+  const BackGroundCircles({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

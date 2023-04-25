@@ -6,10 +6,11 @@ import 'package:elia_ssi_wallet/base/platform_widgets/platform_alert_dialog.dart
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-Future showPlatformAlertDialog({required String title, String? subtitle, required List<MaterialButton> actions, bool isDismissable = false}) async {
+Future showPlatformAlertDialog({required String title, String? subtitle, required List<MaterialButton> actions, bool isDismissable = false, BuildContext? context}) async {
   if (Platform.isIOS || Platform.isMacOS) {
     await showCupertinoDialog(
-        context: locator.get<NavigationService>().navigatorKey.currentContext!,
+        // context: locator.get<NavigationService>().navigatorKey.currentContext!,
+        context: context ?? locator.get<NavigationService>().router.navigatorKey.currentContext!,
         builder: (context) => PlatformAlertDialog(
               title: title,
               message: subtitle,
@@ -18,7 +19,7 @@ Future showPlatformAlertDialog({required String title, String? subtitle, require
         barrierDismissible: isDismissable);
   } else {
     await showDialog(
-        context: locator.get<NavigationService>().navigatorKey.currentContext!,
+        context: context ?? locator.get<NavigationService>().router.navigatorKey.currentContext!,
         builder: (context) => PlatformAlertDialog(
               title: title,
               message: subtitle,
