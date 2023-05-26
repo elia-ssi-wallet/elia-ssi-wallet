@@ -18,13 +18,9 @@ abstract class BaseRestClient {
 
   Dio normalDio = Dio(
     BaseOptions(
-      // baseUrl: locator.get<ApiUrlService>().apiUrl,
-      // baseUrl: apiUrlGlobal,
-      // baseUrl: F.apiUrl,
-      // connectTimeout: 10000,
-      // receiveTimeout: 6000,
-      connectTimeout: 20000,
-      receiveTimeout: 20000,
+      connectTimeout: 30000,
+      receiveTimeout: 60000,
+      sendTimeout: 120000,
       headers: {
         HttpHeaders.acceptHeader: "application/json",
         HttpHeaders.acceptLanguageHeader: "en",

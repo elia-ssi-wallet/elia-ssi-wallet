@@ -1,5 +1,4 @@
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
-import 'package:elia_ssi_wallet/base/extensions/vc.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
 import 'package:elia_ssi_wallet/database/database.dart';
 import 'package:elia_ssi_wallet/pages/home/widgets/vc_detail_screen.dart';
@@ -54,18 +53,18 @@ class VcItem extends StatelessWidget {
                   children: [
                     Flexible(
                       child: Text(
-                        vc.type(),
+                        vc.issuerLabel,
                         style: AppStyles.subtitle,
                       ),
                     ),
                     Flexible(
                       child: selfSigned
                           ? Text(
-                              DateFormat('d/M/y - H:m').format(vc.issuanceDate),
+                              DateFormat('d/M/y - HH:mm').format(vc.issuanceDate.toUtc()),
                               style: AppStyles.title,
                             )
                           : Text(
-                              vc.label,
+                              vc.title,
                               style: AppStyles.title,
                             ),
                     ),

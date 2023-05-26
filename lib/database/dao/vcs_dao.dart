@@ -12,11 +12,12 @@ part 'vcs_dao.drift.dart';
 class VCsDao extends DatabaseAccessor<Database> with _$VCsDaoMixin {
   VCsDao(Database attachedDatabase) : super(attachedDatabase);
 
-  Future<void> insertVC({required dynamic vc, required String label}) async {
+  Future<void> insertVC({required dynamic vc, required String issuerLabel, required String title}) async {
     VCsCompanion newVC = VCsCompanion.insert(
-      label: label,
+      title: title,
+      issuerLabel: issuerLabel,
       vc: jsonEncode(vc),
-      issuer: vc["issuer"],
+      issuerDid: vc["issuer"],
       issuanceDate: DateTime.parse(vc["issuanceDate"]),
       types: vc["type"].cast<String>(),
     );
@@ -26,10 +27,11 @@ class VCsDao extends DatabaseAccessor<Database> with _$VCsDaoMixin {
 
   Future<void> insertTestVC() async {
     VCsCompanion newVC = VCsCompanion.insert(
-      label: 'test ${Random().nextInt(100)}',
+      title: 'test ${Random().nextInt(100)}',
+      issuerLabel: 'test ${Random().nextInt(100)}',
       vc: jsonEncode(testVC),
       types: testVC[0]["type"],
-      issuer: testVC["issuer"],
+      issuerDid: testVC["issuer"],
       issuanceDate: DateTime.parse(testVC["issuanceDate"]),
       activity: Value(
         [
@@ -62,26 +64,26 @@ class VCsDao extends DatabaseAccessor<Database> with _$VCsDaoMixin {
 
   Future<void> deleteVC({required int vcId}) => (delete(vCs)..where((tbl) => tbl.id.equals(vcId))).go();
 
-  Stream<List<VC>> externalVCsStream({required String id}) => (select(vCs)..where((tbl) => tbl.issuer.equals(id).not())).watch();
+  Stream<List<VC>> externalVCsStream({required String id}) => (select(vCs)..where((tbl) => tbl.issuerDid.equals(id).not())).watch();
 
   Stream<List<VC>> searchExternalVcsStream({required String? query, required String id}) => (select(vCs)
         ..where((tbl) {
           if (query == null) {
-            return tbl.issuer.equals(id).not();
+            return tbl.issuerDid.equals(id).not();
           } else {
-            return (tbl.label.lower().contains(query.toLowerCase()) | tbl.types.contains(query.toLowerCase())) & tbl.issuer.equals(id).not();
+            return (tbl.title.lower().contains(query.toLowerCase()) | tbl.issuerLabel.lower().contains(query.toLowerCase()) | tbl.types.contains(query.toLowerCase())) & tbl.issuerDid.equals(id).not();
           }
         }))
       .watch();
 
-  Stream<List<VC>> selfSignedVCsStream({required String id}) => (select(vCs)..where((tbl) => tbl.issuer.equals(id))).watch();
+  Stream<List<VC>> selfSignedVCsStream({required String id}) => (select(vCs)..where((tbl) => tbl.issuerDid.equals(id))).watch();
 
   Stream<List<VC>> searchSelfSignedVcsStream({required String? query, required String id}) => (select(vCs)
         ..where((tbl) {
           if (query == null) {
-            return tbl.issuer.equals(id);
+            return tbl.issuerDid.equals(id);
           } else {
-            return (tbl.label.lower().contains(query.toLowerCase()) | tbl.types.contains(query.toLowerCase())) & tbl.issuer.equals(id);
+            return (tbl.title.lower().contains(query.toLowerCase()) | tbl.issuerLabel.lower().contains(query.toLowerCase()) | tbl.types.contains(query.toLowerCase())) & tbl.issuerDid.equals(id);
           }
         }))
       .watch();
@@ -114,7 +116,7 @@ class VCsDao extends DatabaseAccessor<Database> with _$VCsDaoMixin {
           await into(vCs).insertOnConflictUpdate(matchVC);
         }
       } else {
-        insertVC(vc: inputVC, label: '');
+        insertVC(vc: inputVC, issuerLabel: '', title: '');
       }
     }
   }

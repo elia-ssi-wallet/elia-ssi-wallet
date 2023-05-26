@@ -52,7 +52,9 @@ class HomeScreen extends StatelessWidget {
                 onPressed: () async {
                   // String url = "https://vc-api-dev.energyweb.org/v1/vc-api/exchanges/test_P_1";
                   // context.router.push(LoadingScreenRoute(url: url));
-                  locator<NavigationService>().router.push(QrCodeScannerRoute());
+                  locator<NavigationService>().router.push(QrCodeScannerRoute()).then((value) {
+                    viewModel.initStreams();
+                  });
                 },
                 label: SizedBox(
                   width: MediaQuery.of(context).size.width,

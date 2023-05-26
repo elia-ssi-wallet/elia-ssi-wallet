@@ -15,7 +15,7 @@ class Database extends _$Database {
   Database(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 14;
+  int get schemaVersion => 16;
 
   Future<void> deleteDatabase() async {
     await transaction(() async {

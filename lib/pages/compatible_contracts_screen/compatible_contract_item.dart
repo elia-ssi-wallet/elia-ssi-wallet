@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dotted_line/dotted_line.dart';
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
+import 'package:elia_ssi_wallet/base/extensions/vc.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
 import 'package:elia_ssi_wallet/database/database.dart';
 import 'package:elia_ssi_wallet/pages/widgets/vc_detail_reader.dart';
@@ -61,7 +62,7 @@ class CompatibleContractItem extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 15.0),
                       child: Text(
-                        vc.label,
+                        vc.title,
                         style: AppStyles.title,
                       ),
                     ),
@@ -111,7 +112,7 @@ class CompatibleContractItem extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 15.0),
                             child: Text(
-                              vc.label,
+                              vc.title,
                               style: AppStyles.title,
                             ),
                           ),
@@ -137,7 +138,9 @@ class CompatibleContractItem extends StatelessWidget {
               ),
               VcDetailReader(
                 vc: jsonDecode(vc.vc),
-                issuer: vc.issuer,
+                issuerLabel: vc.issuerLabel,
+                issuerDid: vc.issuerDid,
+                types: vc.vcTableType(),
                 issuanceDate: vc.issuanceDate,
               ),
             ],

@@ -6,6 +6,7 @@ import 'package:elia_ssi_wallet/generated/l10n.dart';
 import 'package:elia_ssi_wallet/networking/do_call.dart';
 import 'package:elia_ssi_wallet/pages/accept_terms_and_conditions/accept_terms_and_conditions_viewmodel.dart';
 import 'package:elia_ssi_wallet/pages/widgets/background_circles.dart';
+import 'package:elia_ssi_wallet/repositories/did_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -92,6 +93,7 @@ class AcceptTermsAndConditions extends StatelessWidget {
                               : () async {
                                   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
                                   sharedPreferences.setBool("tos_accepted", true);
+                                  DIDRepository.initalCheckForDID();
                                   onSuccess(true);
                                 },
                           color: AppColors.dark,

@@ -97,9 +97,10 @@ abstract class _HomeScreenViewModel with Store {
     if (newlyAddedVC == null && !showNotification) {
       newlyAddedVC = VC(
         id: 1,
-        label: "test new vc",
+        issuerLabel: "test new vc",
+        title: 'test new vc',
         vc: "vc",
-        issuer: "issuer",
+        issuerDid: "issuerDid",
         issuanceDate: DateTime.now(),
         types: [],
         activity: [],

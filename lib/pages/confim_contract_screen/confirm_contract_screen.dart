@@ -14,6 +14,7 @@ import 'package:elia_ssi_wallet/repositories/exchange_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:elia_ssi_wallet/base/extensions/vc.dart';
 
 @RoutePage()
 class ConfirmContract extends StatefulWidget {
@@ -30,12 +31,14 @@ class _ConfirmContractState extends State<ConfirmContract> {
   final ConfirmContractViewModel viewModel = ConfirmContractViewModel();
 
   List<SliverOverlapAbsorberHandle> sliverOverlapAbsorberHandleList = [];
-  List<TextEditingController> textEditingControllerList = [];
+  List<TextEditingController> issuerTextEditingControllerList = [];
+  List<TextEditingController> titleTextEditingControllerList = [];
 
   @override
   void initState() {
     sliverOverlapAbsorberHandleList = List.generate(widget.vp['verifiableCredential'].length, (index) => SliverOverlapAbsorberHandle());
-    textEditingControllerList = List.generate(widget.vp['verifiableCredential'].length, (index) => TextEditingController());
+    issuerTextEditingControllerList = List.generate(widget.vp['verifiableCredential'].length, (index) => TextEditingController());
+    titleTextEditingControllerList = List.generate(widget.vp['verifiableCredential'].length, (index) => TextEditingController());
     super.initState();
   }
 
@@ -80,22 +83,25 @@ class _ConfirmContractState extends State<ConfirmContract> {
               Expanded(
                 child: FloatingActionButton.extended(
                   heroTag: 'confirmScreen2',
-                  backgroundColor: AppColors.dark,
-                  onPressed: () async {
-                    await ExchangeRepository.dao.insertVC(
-                      vc: widget.vp['verifiableCredential'][0],
-                      label: textEditingControllerList[viewModel.pageController.page!.toInt()].text,
-                    );
-                    if (widget.vp['verifiableCredential'].isEmpty || widget.vp['verifiableCredential'].length == 1) {
-                      ExchangeRepository.pendingRequestDao.deletePendingRequestWithId(id: widget.pendingRequestId);
-                      context.router.popUntilRouteWithName(HomeScreenRoute.name);
-                    } else {
-                      widget.vp['verifiableCredential'].removeAt(0);
-                      ExchangeRepository.pendingRequestDao.updatePendingRequest(id: widget.pendingRequestId, vp: widget.vp);
-                      viewModel.nextPage();
-                    }
-                    // context.router.popUntilRouteWithName(HomeScreenRoute.name);
-                  },
+                  backgroundColor: issuerTextEditingControllerList[0].text != '' && MediaQuery.of(context).viewInsets.bottom == 0 ? AppColors.dark : AppColors.dark.withOpacity(0.4),
+                  onPressed: issuerTextEditingControllerList[0].text != '' && MediaQuery.of(context).viewInsets.bottom == 0
+                      ? () async {
+                          await ExchangeRepository.dao.insertVC(
+                            vc: widget.vp['verifiableCredential'][0],
+                            issuerLabel: issuerTextEditingControllerList[viewModel.pageController.page!.toInt()].text,
+                            title: titleTextEditingControllerList[viewModel.pageController.page!.toInt()].text,
+                          );
+                          if (widget.vp['verifiableCredential'].isEmpty || widget.vp['verifiableCredential'].length == 1) {
+                            ExchangeRepository.pendingRequestDao.deletePendingRequestWithId(id: widget.pendingRequestId);
+                            context.router.popUntilRouteWithName(HomeScreenRoute.name);
+                          } else {
+                            widget.vp['verifiableCredential'].removeAt(0);
+                            ExchangeRepository.pendingRequestDao.updatePendingRequest(id: widget.pendingRequestId, vp: widget.vp);
+                            viewModel.nextPage();
+                          }
+                          // context.router.popUntilRouteWithName(HomeScreenRoute.name);
+                        }
+                      : null,
                   label: Center(
                     child: Text(
                       S.of(context).accept,
@@ -171,7 +177,15 @@ class _ConfirmContractState extends State<ConfirmContract> {
                                   height: 23,
                                 ),
                                 CustomTextFormField(
-                                  controller: textEditingControllerList[i],
+                                  controller: titleTextEditingControllerList[i],
+                                  title: S.of(context).name_this_card,
+                                ),
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                CustomTextFormField(
+                                  controller: issuerTextEditingControllerList[i],
+                                  title: S.of(context).name_this_issuer,
                                 ),
                                 const SizedBox(
                                   height: 15,
@@ -220,8 +234,9 @@ class _ConfirmContractState extends State<ConfirmContract> {
                                 ),
                                 VcDetailReader(
                                   vc: widget.vp['verifiableCredential'][i],
-                                  issuer: widget.vp['verifiableCredential'][i]['issuer'],
+                                  issuerDid: widget.vp['verifiableCredential'][i]['issuer'],
                                   issuanceDate: DateTime.parse(widget.vp['verifiableCredential'][i]['issuanceDate']),
+                                  types: (widget.vp['verifiableCredential'][i]["type"].cast<String>().toList() as List<String>).vcType(),
                                 ),
                                 // ...vp['verifiableCredential'].map((e) {
                                 //   return VcDetailReader(

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:elia_ssi_wallet/base/assets/assets.dart';
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
+import 'package:elia_ssi_wallet/base/extensions/vc.dart';
 import 'package:elia_ssi_wallet/base/helpers/alert_dialog_helper.dart';
 import 'package:elia_ssi_wallet/base/router/app_router.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
@@ -81,7 +82,7 @@ class VCDetailScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(right: 60.0),
               child: Text(
-                vc.label,
+                vc.title,
                 style: const TextStyle(color: Colors.black),
               ),
             ),
@@ -164,7 +165,9 @@ class VCDetailScreen extends StatelessWidget {
                     ),
                     VcDetailReader(
                       vc: jsonDecode(vc.vc),
-                      issuer: vc.issuer,
+                      types: vc.vcTableType(),
+                      issuerDid: vc.issuerDid,
+                      issuerLabel: vc.issuerLabel != '' ? vc.issuerLabel : null,
                       issuanceDate: vc.issuanceDate,
                     ),
                     const SizedBox(
@@ -220,7 +223,7 @@ class VCDetailScreen extends StatelessWidget {
                                 )
                           : Column(
                               children: [
-                                ...vc.activity.sublist(0, 3).reversed.map(
+                                ...vc.activity.reversed.toList().sublist(0, 3).map(
                                       (e) => Padding(
                                         padding: const EdgeInsets.only(bottom: 10.0),
                                         child: ActivityItem(

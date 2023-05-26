@@ -10,6 +10,7 @@ import 'package:elia_ssi_wallet/repositories/notification_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:mobx/mobx.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 part 'loading_screen_viewmodel.g.dart';
 
@@ -105,9 +106,13 @@ abstract class _LoadingScreenViewModel with Store {
     );
   }
 
-  Future<void> periodicCall({required String serviceEndpoint, required dynamic vp}) async {
+  Future<void> periodicCall({required String serviceEndpoint, required dynamic vp, Function()? insertVCs}) async {
     String exchangeId = serviceEndpoint.getExchangeIdFromExchangeUrl();
-    await NotificationsRepository.addData(exchangeId: exchangeId);
+    try {
+      await NotificationsRepository.addData(exchangeId: exchangeId);
+    } catch (e) {
+      Sentry.captureException(e);
+    }
 
     while (!exchangeCompleted && !error && !goToPending) {
       await Future.delayed(
@@ -119,8 +124,14 @@ abstract class _LoadingScreenViewModel with Store {
             serviceEndpoint: serviceEndpoint,
             vpRequest: vp,
             onSuccess: (response) async {
+              if (attempts == 1) {
+                if (insertVCs != null) {
+                  insertVCs();
+                }
+              }
               if (response['processingInProgress'] == true) {
-                status = 'Waiting for review: attempt $attempts';
+                status = 'Waiting for review';
+
                 exchangeCompleted = false;
               } else {
                 debugPrint('Exchange completed');
@@ -276,9 +287,14 @@ abstract class _LoadingScreenViewModel with Store {
               requestVp: vp,
             );
             periodicCall(
-              serviceEndpoint: vpRequest['vpRequest']['interact']['service'][0]['serviceEndpoint'],
-              vp: vp,
-            );
+                serviceEndpoint: vpRequest['vpRequest']['interact']['service'][0]['serviceEndpoint'],
+                vp: vp,
+                insertVCs: () async {
+                  await ExchangeRepository.dao.insertUniqueVCs(
+                    vCsList: vCs,
+                    exchangeBaseUrl: exchangeUrl.getBaseUrlfromExchangeUrl(),
+                  );
+                });
           } else {
             status = 'Unknown service type';
             error = true;

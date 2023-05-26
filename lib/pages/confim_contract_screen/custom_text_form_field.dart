@@ -3,9 +3,14 @@ import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
 class CustomTextFormField extends StatelessWidget {
-  CustomTextFormField({Key? key, required this.controller}) : super(key: key);
+  CustomTextFormField({
+    Key? key,
+    required this.controller,
+    required this.title,
+  }) : super(key: key);
 
   final TextEditingController controller;
+  final String title;
 
   final border = OutlineInputBorder(
     borderSide: const BorderSide(color: Color(0xFFE3E8F0)),
@@ -24,7 +29,7 @@ class CustomTextFormField extends StatelessWidget {
       decoration: InputDecoration(
         filled: false,
         fillColor: Colors.transparent,
-        label: const Text('Name this issuer'),
+        label: Text(title),
         labelStyle: AppStyles.normal,
         border: border,
         focusedBorder: selectedBorder,

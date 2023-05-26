@@ -8,12 +8,16 @@ class VcDetailReader extends StatelessWidget {
   const VcDetailReader({
     Key? key,
     required this.vc,
-    required this.issuer,
+    this.issuerLabel,
+    required this.issuerDid,
     required this.issuanceDate,
+    required this.types,
   }) : super(key: key);
 
   final dynamic vc;
-  final String issuer;
+  final String? issuerLabel;
+  final String issuerDid;
+  final String types;
   final DateTime issuanceDate;
 
   @override
@@ -28,6 +32,29 @@ class VcDetailReader extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (issuerLabel != null)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 48.0),
+                    child: Text(
+                      'Issuer',
+                      softWrap: false,
+                      style: AppStyles.smallText,
+                    ),
+                  ),
+                  Flexible(
+                    child: Text(
+                      issuerLabel!,
+                      softWrap: true,
+                      textAlign: TextAlign.right,
+                      style: AppStyles.mediumText,
+                    ),
+                  ),
+                ],
+              ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,14 +62,36 @@ class VcDetailReader extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(right: 48.0),
                   child: Text(
-                    'Issuer',
+                    'Issuer DID',
                     softWrap: false,
                     style: AppStyles.smallText,
                   ),
                 ),
                 Flexible(
                   child: Text(
-                    issuer,
+                    issuerDid,
+                    softWrap: true,
+                    textAlign: TextAlign.right,
+                    style: AppStyles.mediumText,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 48.0),
+                  child: Text(
+                    'Card types',
+                    softWrap: false,
+                    style: AppStyles.smallText,
+                  ),
+                ),
+                Flexible(
+                  child: Text(
+                    types,
                     softWrap: true,
                     textAlign: TextAlign.right,
                     style: AppStyles.mediumText,
@@ -64,7 +113,7 @@ class VcDetailReader extends StatelessWidget {
                 ),
                 Flexible(
                   child: Text(
-                    DateFormat('EEE d/M/y - H:m').format(issuanceDate),
+                    DateFormat('EEE d/M/y - HH:mm').format(issuanceDate),
                     softWrap: true,
                     textAlign: TextAlign.right,
                     style: AppStyles.mediumText,

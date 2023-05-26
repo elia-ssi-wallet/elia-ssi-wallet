@@ -10,6 +10,7 @@ import 'package:elia_ssi_wallet/database/dao/all_daos.dart';
 import 'package:elia_ssi_wallet/database/database.dart';
 import 'package:elia_ssi_wallet/database/mobile.dart';
 import 'package:elia_ssi_wallet/firebase_options.dart';
+import 'package:elia_ssi_wallet/repositories/exchange_repository.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -18,6 +19,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:logger/logger.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'app.dart';
@@ -56,12 +58,16 @@ void main() async {
     Logger().e("Firebase initialization error: $e");
   }
 
-  String? fcmToken = await FirebaseMessaging.instance.getToken();
-  Logger().d("FCM TOKEN = $fcmToken");
+  try {
+    String? fcmToken = await FirebaseMessaging.instance.getToken();
+    Logger().d("FCM TOKEN = $fcmToken");
 
-  // 3. On iOS, this helps to take the user permissions
-  NotificationSettings settings = await FirebaseMessaging.instance.requestPermission();
-  Logger().d("settings = $settings");
+    // 3. On iOS, this helps to take the user permissions
+    NotificationSettings settings = await FirebaseMessaging.instance.requestPermission();
+    Logger().d("settings = $settings");
+  } catch (e, stackTrace) {
+    Sentry.captureException(e, stackTrace: stackTrace);
+  }
 
   String? deepLink = await handleDeepLink();
 
@@ -156,11 +162,29 @@ void _handleMessage(RemoteMessage message) async {
 
   if (exchangeId != null) {
     Logger().d('Got exchangeID -> $exchangeId');
+
     PendingRequest? request = await PendingRequestsDao(database).getPendingRequestsWithExchangeId(exchangeId: exchangeId);
 
-    if (request != null && request.vp != null) {
-      Logger().d('Got pending request -> $request');
-      locator.get<NavigationService>().router.push(ConfirmContractRoute(vp: jsonDecode(request.vp!), pendingRequestId: request.id));
+    if (request != null) {
+      await ExchangeRepository.submitPresentation(
+        serviceEndpoint: request.serviceEndpoint,
+        vpRequest: jsonDecode(request.requestVp),
+        onSuccess: (response) async {
+          if (response['processingInProgress'] == false) {
+            await ExchangeRepository.pendingRequestDao.updatePendingRequest(id: request.id, vp: response['vp']);
+            // if (request.vp != null) {
+            // Logger().d('Got pending request -> $request');
+            Logger().d("navigate to confirm contract");
+            locator.get<NavigationService>().router.push(ConfirmContractRoute(vp: response['vp'], pendingRequestId: request.id));
+            // }
+          }
+        },
+        onError: (e) async {
+          Logger().e("onerror $e");
+          await ExchangeRepository.pendingRequestDao.updatePendingRequestWithError(id: request.id);
+        },
+        showDialogs: false,
+      );
     }
   }
 }
