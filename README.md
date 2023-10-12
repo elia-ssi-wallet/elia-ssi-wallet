@@ -9,6 +9,10 @@ Elia SSI Wallet is a Flutter project developed by Elia and Wisemen.
 
 Elia SSI Wallet is a Flutter-based application that serves as a wallet for Self-Sovereign Identity (SSI). The project incorporates various functionalities to manage digital identities in a secure and private manner.
 
+## Instructions to run
+Install Flutter version 3.7.12
+Install plugin FLutter Intl and restart the IDE
+
 ## License
 
 This project is licensed under the MIT License​[1](https://github.com/elia-ssi-wallet/elia-ssi-wallet/tree/develop)​.
