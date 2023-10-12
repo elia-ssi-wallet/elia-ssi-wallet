@@ -8,7 +8,6 @@ import 'package:elia_ssi_wallet/pages/home/home_screen.dart';
 import 'package:elia_ssi_wallet/pages/home/widgets/vc_detail_screen.dart';
 import 'package:elia_ssi_wallet/pages/loading_screen/loading_screen.dart';
 import 'package:elia_ssi_wallet/pages/qr_code_scanner/qr_code_scanner.dart';
-import 'package:elia_ssi_wallet/database/database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:elia_ssi_wallet/base/assets/assets.dart';

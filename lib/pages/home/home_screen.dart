@@ -5,7 +5,6 @@ import 'package:elia_ssi_wallet/base/get_it.dart';
 import 'package:elia_ssi_wallet/base/navigation_service.dart';
 import 'package:elia_ssi_wallet/base/router/app_router.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
-import 'package:elia_ssi_wallet/database/database.dart';
 import 'package:elia_ssi_wallet/generated/l10n.dart';
 import 'package:elia_ssi_wallet/pages/did/did_token_screen.dart';
 import 'package:elia_ssi_wallet/pages/home/home_screen_viewmodel.dart';

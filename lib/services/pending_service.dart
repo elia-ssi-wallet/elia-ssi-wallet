@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:elia_ssi_wallet/database/database.dart';
 import 'package:elia_ssi_wallet/repositories/exchange_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';

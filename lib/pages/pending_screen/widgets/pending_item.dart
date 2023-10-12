@@ -2,10 +2,8 @@ import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
-import 'package:elia_ssi_wallet/base/extensions/strings.dart';
 import 'package:elia_ssi_wallet/base/router/app_router.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
-import 'package:elia_ssi_wallet/database/database.dart';
 import 'package:elia_ssi_wallet/pages/pending_screen/widgets/delete_pending_dialog.dart';
 import 'package:elia_ssi_wallet/pages/pending_screen/widgets/pending_badge.dart';
 import 'package:flutter/material.dart';

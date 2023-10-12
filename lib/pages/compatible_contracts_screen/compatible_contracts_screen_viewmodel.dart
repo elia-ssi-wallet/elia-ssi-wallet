@@ -1,4 +1,3 @@
-import 'package:elia_ssi_wallet/database/database.dart';
 import 'package:elia_ssi_wallet/repositories/exchange_repository.dart';
 import 'package:mobx/mobx.dart';
 

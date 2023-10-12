@@ -7,7 +7,6 @@ import 'package:elia_ssi_wallet/base/globals.dart';
 import 'package:elia_ssi_wallet/base/navigation_service.dart';
 import 'package:elia_ssi_wallet/base/router/app_router.dart';
 import 'package:elia_ssi_wallet/database/dao/all_daos.dart';
-import 'package:elia_ssi_wallet/database/database.dart';
 import 'package:elia_ssi_wallet/database/mobile.dart';
 import 'package:elia_ssi_wallet/firebase_options.dart';
 import 'package:elia_ssi_wallet/repositories/exchange_repository.dart';

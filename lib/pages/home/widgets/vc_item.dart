@@ -1,6 +1,5 @@
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
-import 'package:elia_ssi_wallet/database/database.dart';
 import 'package:elia_ssi_wallet/pages/home/widgets/vc_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

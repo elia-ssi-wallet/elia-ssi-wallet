@@ -6,7 +6,6 @@ import 'package:logger/logger.dart';
 import 'package:elia_ssi_wallet/base/assets/assets.dart';
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
-import 'package:elia_ssi_wallet/database/database.dart';
 import 'package:elia_ssi_wallet/generated/l10n.dart';
 
 class NewContractNotification extends StatelessWidget {

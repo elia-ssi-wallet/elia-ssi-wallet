@@ -2,8 +2,6 @@ import 'package:drift/drift.dart';
 import 'package:elia_ssi_wallet/base/globals.dart';
 import 'package:elia_ssi_wallet/database/tables/all_tables.dart';
 import 'package:elia_ssi_wallet/database/dao/all_daos.dart';
-import 'package:elia_ssi_wallet/models/activity.dart';
-import 'package:elia_ssi_wallet/database/type_converters.dart';
 // export 'database_shared/mobile.dart';
 
 part 'database.drift.dart';

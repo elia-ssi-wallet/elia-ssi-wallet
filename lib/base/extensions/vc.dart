@@ -1,4 +1,3 @@
-import 'package:elia_ssi_wallet/database/database.dart';
 
 extension VcTableTypeExtension on VC {
   String vcTableType() {
