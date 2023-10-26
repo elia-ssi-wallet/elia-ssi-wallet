@@ -10,6 +10,15 @@ class ConsentRepository {
   }) async {
     String idcUrl = "https://inpdesc-to-cred-dev.energyweb.org";
 
+    var fields = inputDescriptor['constraints']['fields'];
+    for (var field in fields) {
+      if (field['path'] != null && field['path'].toString() == '[\$.credentialSubject]') {
+        if (field['filter']['properties']['consent'] != null) {
+          field['filter']['additionalProperties'] = false;
+        }
+      }
+    }
+
     await doCall<dynamic>(
       ApiManagerService(UnProtectedRestClient().dio).convertInputDescriptorToCredential(idcUrl: idcUrl, inputDescriptor: inputDescriptor),
       succesFunction: (object) async {
