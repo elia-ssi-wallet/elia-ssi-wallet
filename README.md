@@ -11,7 +11,7 @@ Elia SSI Wallet is a Flutter-based application that serves as a wallet for Self-
 
 ## Instructions to run
 Install Flutter version 3.7.12
-Install plugin FLutter Intl and restart the IDE
+Install plugin Flutter Intl and restart the IDE
 
 ## License
 
