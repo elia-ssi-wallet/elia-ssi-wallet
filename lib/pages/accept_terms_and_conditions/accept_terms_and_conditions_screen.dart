@@ -1,6 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:elia_ssi_wallet/base/colors/colors.dart';
+import 'package:elia_ssi_wallet/base/get_it.dart';
+import 'package:elia_ssi_wallet/base/navigation_service.dart';
 import 'package:elia_ssi_wallet/base/platform_widgets/platform_widgets.dart';
+import 'package:elia_ssi_wallet/base/router/app_router.dart';
 import 'package:elia_ssi_wallet/base/text_styles/app_text_styles.dart';
 import 'package:elia_ssi_wallet/generated/l10n.dart';
 import 'package:elia_ssi_wallet/networking/do_call.dart';
@@ -12,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:styled_text/styled_text.dart';
+import 'package:elia_ssi_wallet/pages/accept_terms_and_conditions/terms_of_use.dart';
 
 @RoutePage()
 class AcceptTermsAndConditions extends StatelessWidget {
@@ -65,8 +69,7 @@ class AcceptTermsAndConditions extends StatelessWidget {
                         tags: {
                           "link": StyledTextActionTag(
                             (text, attributes) {
-                              //todo: go to TOS
-                              showAlertDialog(title: S.of(context).app_name, message: "todo: go to Terms of Conditions");
+                              locator.get<NavigationService>().router.push(TermsOfUseScreenRoute());
                             },
                             style: AppStyles.label.copyWith(fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
                           )

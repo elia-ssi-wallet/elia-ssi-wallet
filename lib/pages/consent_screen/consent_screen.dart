@@ -126,7 +126,7 @@ class ConsentScreen extends StatelessWidget {
                             activeColor: AppColors.green,
                             inactiveTrackColor: AppColors.grey3,
                             title: Text(
-                              'I accept the terms and conditions',
+                              'I accept the terms of use',
                               style: AppStyles.boldText,
                             ),
                             onChanged: (val) {
