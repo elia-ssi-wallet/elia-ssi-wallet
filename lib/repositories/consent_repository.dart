@@ -2,6 +2,8 @@ import 'package:elia_ssi_wallet/networking/api_manager_service.dart';
 import 'package:elia_ssi_wallet/networking/do_call.dart';
 import 'package:elia_ssi_wallet/networking/unprotected_rest_client.dart';
 
+
+
 class ConsentRepository {
   static Future<void> convertInputToCredential({
     required dynamic inputDescriptor,
@@ -10,14 +12,7 @@ class ConsentRepository {
   }) async {
     String idcUrl = "https://inpdesc-to-cred-dev.energyweb.org";
 
-    var fields = inputDescriptor['constraints']['fields'];
-    for (var field in fields) {
-      if (field['path'] != null && field['path'].toString() == '[\$.credentialSubject]') {
-        if (field['filter']['properties']['consent'] != null) {
-          field['filter']['additionalProperties'] = false;
-        }
-      }
-    }
+    var fields = inputDescriptor['constraints']['fields'];    
 
     await doCall<dynamic>(
       ApiManagerService(UnProtectedRestClient().dio).convertInputDescriptorToCredential(idcUrl: idcUrl, inputDescriptor: inputDescriptor),

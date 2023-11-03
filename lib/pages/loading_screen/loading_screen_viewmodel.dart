@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:mobx/mobx.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'dart:developer';
+import 'dart:convert';
 
 part 'loading_screen_viewmodel.g.dart';
 
@@ -57,17 +59,28 @@ abstract class _LoadingScreenViewModel with Store {
           List<dynamic> vCs = [];
           for (var element in vpRequest['vpRequest']['query'][0]['credentialQuery'][0]['presentationDefinition']['input_descriptors']) {
             if (element['constraints']['subject_is_issuer'] != null && element['constraints']['subject_is_issuer'] == 'required') {
-              String? termsAndContitions;
+              String? termsAndConditions;
               try {
-                termsAndContitions = element['constraints']['fields'].firstWhere((element) => element['path'][0] == '\$.credentialSubject')['filter']['properties']['consent']['const'];
+                var targetField = element['constraints']['fields'].firstWhere((field) => field['path'][0] == '\$.credentialSubject');
+                var filter = targetField['filter'];
+                var properties = filter['properties'];
+                var agreesTo = properties['agreesTo'];
+                var agreesToProperties = agreesTo['properties'];
+                // Extract the properties
+                String expressionOfTheOffer = "Expression of the offer : " + agreesToProperties['expressionOfTheOffer']['const'];
+                String compensationOfTheOffer = "Compensation of the offer : " + agreesToProperties['compensationOfTheOffer']['const'];
+                String jurisdiction = "Jurisdiction : " + agreesToProperties['jurisdiction']['const'];
+                String applicationLaw = "Application law : " + agreesToProperties['applicationLaw']['const'];
+
+                termsAndConditions = '$expressionOfTheOffer\n$compensationOfTheOffer\n$jurisdiction\n$applicationLaw';
               } catch (e) {
                 Logger().e(e);
                 status = 'Count not find terms and conditions';
                 error = true;
               }
 
-              if (termsAndContitions != null) {
-                await locator.get<NavigationService>().router.push(ConsentScreenRoute(termsAndContitions: termsAndContitions));
+              if (termsAndConditions != null) {
+                await locator.get<NavigationService>().router.push(ConsentScreenRoute(termsAndContitions: termsAndConditions));
                 dynamic verifiableCredential = await consentToverifiableCredential(constraints: element['constraints']);
                 if (verifiableCredential != null) {
                   vCs.add(verifiableCredential);
@@ -187,9 +200,27 @@ abstract class _LoadingScreenViewModel with Store {
     );
   }
 
+  void convertAdditionalProperties(dynamic obj) {
+    if (obj is Map) {
+      for (var key in obj.keys.toList()) {
+        if (key == "additionalProperties" && obj[key] == true) {
+          obj[key] = false;
+        }
+        convertAdditionalProperties(obj[key]);
+      }
+    } else if (obj is List) {
+      for (var item in obj) {
+        convertAdditionalProperties(item);
+      }
+    }
+  }
+
   Future<dynamic> consentToverifiableCredential({required dynamic constraints}) async {
     status = 'Converting input descriptor to credential';
     dynamic result;
+
+    convertAdditionalProperties(constraints);
+
     await ConsentRepository.convertInputToCredential(
       inputDescriptor: {
         'constraints': constraints,
@@ -197,27 +228,29 @@ abstract class _LoadingScreenViewModel with Store {
       onSuccess: (credential) async {
         await DIDRepository.initalCheckForDID();
         DIDToken? didToken = await DIDRepository.getDidTokenFromSecureStorage();
+
         if (didToken != null) {
           status = 'Issuing self signed credential';
-          // Logger().i(jsonDecode(jsonEncode(credential)));
-          await ConsentRepository.issueSelfSignedCredential(
-            credential: {
+          var payload = {
               'credential': {
+                'issuer': didToken.id,
+                'issuanceDate': '${DateTime.now().toIso8601String()}Z',
                 'id': credential['credential']['id'],
                 '@context': credential['credential']['@context'],
                 'credentialSubject': {
-                  'consent': credential['credential']['credentialSubject']['consent'],
-                  'id': didToken.id,
+                  ...credential['credential']['credentialSubject'], // Spread the existing content
+                  'id': didToken?.id, // Inject the new id field
                 },
-                'type': credential['credential']['type'],
-                'issuer': didToken.id,
-                'issuanceDate': '${DateTime.now().toIso8601String()}Z',
+                'type': credential['credential']['type']
               },
-            },
+            };
+          await ConsentRepository.issueSelfSignedCredential(
+            credential: payload,
             onSuccess: (verifiableCredential) async {
               result = verifiableCredential;
             },
             onError: (e) {
+              
               Logger().e(e);
               status = 'Issuing self signed credential failed';
               error = true;
@@ -237,6 +270,7 @@ abstract class _LoadingScreenViewModel with Store {
 
     return result;
   }
+
 
   Future<void> createAndSubmitPresentation({required dynamic vpRequest, required List<dynamic> vCs, required String exchangeUrl}) async {
     await DIDRepository.initalCheckForDID();
@@ -263,6 +297,7 @@ abstract class _LoadingScreenViewModel with Store {
         onSuccess: (vp) async {
           if (vpRequest['vpRequest']['interact']['service'][0]['type'] == 'UnmediatedHttpPresentationService2021') {
             status = 'Submitting presentation';
+
             await ExchangeRepository.submitPresentation(
               serviceEndpoint: vpRequest['vpRequest']['interact']['service'][0]['serviceEndpoint'],
               vpRequest: vp,
