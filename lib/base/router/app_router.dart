@@ -1,6 +1,8 @@
+library app_router;
 import 'package:auto_route/auto_route.dart';
 import 'package:elia_ssi_wallet/base/router/terms_auth_guard.dart';
 import 'package:elia_ssi_wallet/pages/accept_terms_and_conditions/accept_terms_and_conditions_screen.dart';
+import 'package:elia_ssi_wallet/pages/accept_terms_and_conditions/terms_of_use.dart';
 import 'package:elia_ssi_wallet/pages/compatible_contracts_screen/compatible_contracts_screen.dart';
 import 'package:elia_ssi_wallet/pages/confim_contract_screen/confirm_contract_screen.dart';
 import 'package:elia_ssi_wallet/pages/consent_screen/consent_screen.dart';
@@ -46,6 +48,7 @@ class AppRouter extends _$AppRouter {
     AutoRoute(page: VCDetailScreenRoute.page),
     AutoRoute(page: NotFoundScreenRoute.page),
     AutoRoute(page: ConsentScreenRoute.page),
+    AutoRoute(page: TermsOfUseScreenRoute.page),
     AutoRoute(path: "/error", page: NotFoundScreenRoute.page),
     AutoRoute(path: "*", page: NotFoundScreenRoute.page),
   ];
