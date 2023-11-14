@@ -7,10 +7,12 @@ class CustomTextFormField extends StatelessWidget {
     Key? key,
     required this.controller,
     required this.title,
+    this.onChanged,
   }) : super(key: key);
 
   final TextEditingController controller;
   final String title;
+  final Function(String)? onChanged;
 
   final border = OutlineInputBorder(
     borderSide: const BorderSide(color: Color(0xFFE3E8F0)),
@@ -26,6 +28,7 @@ class CustomTextFormField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       cursorColor: AppColors.dark,
+      onChanged: onChanged,
       decoration: InputDecoration(
         filled: false,
         fillColor: Colors.transparent,
