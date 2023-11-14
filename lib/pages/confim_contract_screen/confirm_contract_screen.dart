@@ -34,12 +34,28 @@ class _ConfirmContractState extends State<ConfirmContract> {
   List<TextEditingController> issuerTextEditingControllerList = [];
   List<TextEditingController> titleTextEditingControllerList = [];
 
+  ValueNotifier<bool> isButtonEnabled = ValueNotifier(false);
+
   @override
   void initState() {
     sliverOverlapAbsorberHandleList = List.generate(widget.vp['verifiableCredential'].length, (index) => SliverOverlapAbsorberHandle());
     issuerTextEditingControllerList = List.generate(widget.vp['verifiableCredential'].length, (index) => TextEditingController());
     titleTextEditingControllerList = List.generate(widget.vp['verifiableCredential'].length, (index) => TextEditingController());
+    
+    for (var controller in issuerTextEditingControllerList) {
+      controller.addListener(() => updateButtonState());
+    }
+    for (var controller in titleTextEditingControllerList) {
+      controller.addListener(() => updateButtonState());
+    }
+
     super.initState();
+  }
+
+  void updateButtonState() {
+    bool isEnabled = issuerTextEditingControllerList.any((c) => c.text.isNotEmpty) &&
+                    titleTextEditingControllerList.any((c) => c.text.isNotEmpty);
+    isButtonEnabled.value = isEnabled;
   }
 
   @override
@@ -81,34 +97,39 @@ class _ConfirmContractState extends State<ConfirmContract> {
                 width: 7,
               ),
               Expanded(
-                child: FloatingActionButton.extended(
-                  heroTag: 'confirmScreen2',
-                  backgroundColor: issuerTextEditingControllerList[0].text != '' && MediaQuery.of(context).viewInsets.bottom == 0 ? AppColors.dark : AppColors.dark.withOpacity(0.4),
-                  onPressed: issuerTextEditingControllerList[0].text != '' && MediaQuery.of(context).viewInsets.bottom == 0
-                      ? () async {
-                          await ExchangeRepository.dao.insertVC(
-                            vc: widget.vp['verifiableCredential'][0],
-                            issuerLabel: issuerTextEditingControllerList[viewModel.pageController.page!.toInt()].text,
-                            title: titleTextEditingControllerList[viewModel.pageController.page!.toInt()].text,
-                          );
-                          if (widget.vp['verifiableCredential'].isEmpty || widget.vp['verifiableCredential'].length == 1) {
-                            ExchangeRepository.pendingRequestDao.deletePendingRequestWithId(id: widget.pendingRequestId);
-                            context.router.popUntilRouteWithName(HomeScreenRoute.name);
-                          } else {
-                            widget.vp['verifiableCredential'].removeAt(0);
-                            ExchangeRepository.pendingRequestDao.updatePendingRequest(id: widget.pendingRequestId, vp: widget.vp);
-                            viewModel.nextPage();
-                          }
-                          // context.router.popUntilRouteWithName(HomeScreenRoute.name);
-                        }
-                      : null,
-                  label: Center(
-                    child: Text(
-                      S.of(context).accept,
-                      textAlign: TextAlign.center,
-                      style: AppStyles.button,
-                    ),
-                  ),
+                child: ValueListenableBuilder<bool>(
+                  valueListenable: isButtonEnabled,
+                  builder: (context, isEnabled, child) {
+                    return FloatingActionButton.extended(
+                      heroTag: 'confirmScreen2',
+                      backgroundColor: isEnabled ? AppColors.dark : AppColors.dark.withOpacity(0.4),
+                      onPressed: isEnabled
+                          ? () async {
+                              await ExchangeRepository.dao.insertVC(
+                                vc: widget.vp['verifiableCredential'][0],
+                                issuerLabel: issuerTextEditingControllerList[viewModel.pageController.page!.toInt()].text,
+                                title: titleTextEditingControllerList[viewModel.pageController.page!.toInt()].text,
+                              );
+                              if (widget.vp['verifiableCredential'].isEmpty || widget.vp['verifiableCredential'].length == 1) {
+                                ExchangeRepository.pendingRequestDao.deletePendingRequestWithId(id: widget.pendingRequestId);
+                                context.router.popUntilRouteWithName(HomeScreenRoute.name);
+                              } else {
+                                widget.vp['verifiableCredential'].removeAt(0);
+                                ExchangeRepository.pendingRequestDao.updatePendingRequest(id: widget.pendingRequestId, vp: widget.vp);
+                                viewModel.nextPage();
+                              }
+                              // context.router.popUntilRouteWithName(HomeScreenRoute.name);
+                            }
+                          : null,
+                      label: Center(
+                        child: Text(
+                          S.of(context).accept,
+                          textAlign: TextAlign.center,
+                          style: AppStyles.button,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -179,6 +200,7 @@ class _ConfirmContractState extends State<ConfirmContract> {
                                 CustomTextFormField(
                                   controller: titleTextEditingControllerList[i],
                                   title: S.of(context).name_this_card,
+                                  onChanged: (value) => updateButtonState(),
                                 ),
                                 const SizedBox(
                                   height: 15,
@@ -186,6 +208,7 @@ class _ConfirmContractState extends State<ConfirmContract> {
                                 CustomTextFormField(
                                   controller: issuerTextEditingControllerList[i],
                                   title: S.of(context).name_this_issuer,
+                                  onChanged: (value) => updateButtonState(),
                                 ),
                                 const SizedBox(
                                   height: 15,
@@ -260,5 +283,17 @@ class _ConfirmContractState extends State<ConfirmContract> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    isButtonEnabled.dispose();
+    for (var controller in issuerTextEditingControllerList) {
+      controller.dispose();
+    }
+    for (var controller in titleTextEditingControllerList) {
+      controller.dispose();
+    }
+    super.dispose();
   }
 }
